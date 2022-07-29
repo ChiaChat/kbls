@@ -1,7 +1,8 @@
 package com.chiachat.kbls
 
 import Bech32
-import com.chiachat.kbls.crypto.bech32.KHex
+import com.chiachat.kbls.bech32.KHex
+import com.chiachat.kbls.bls.constants.defaultEc
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -25,8 +26,8 @@ class KeyGenTest {
 
     @Test
     fun testEc(){
-        val q = default_ec.q
-        g = G1Generator()
+        val q = defaultEc.q
+        val g = G1Generator()
 
         assert g.is_on_curve()
         assert 2 * g == g + g

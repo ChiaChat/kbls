@@ -1,4 +1,4 @@
-package com.chiachat.kbls.crypto.bech32
+package com.chiachat.kbls.bech32
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign

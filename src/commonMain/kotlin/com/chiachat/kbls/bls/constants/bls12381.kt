@@ -1,5 +1,9 @@
-package com.chiachat.kbls.crypto.bls.constants
+package com.chiachat.kbls.bls.constants
 
+import com.chiachat.kbls.bls.Fq
+import com.chiachat.kbls.bls.Fq2
+import com.chiachat.kbls.bls.ec.EC
+import com.chiachat.kbls.bls.ec.ECTwist
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 val x = BigInteger.parseString("-d201000000010000", 16)
@@ -85,22 +89,6 @@ val sqrtN3m1o2 =
         10
     )
 
-data class EC(
-    val q: BigInteger,
-    val a: Fq,
-    val b: Fq,
-    val gx: Fq,
-    val gy: Fq,
-    val g2x: Fq2,
-    val g2y: Fq2,
-    val n: BigInteger,
-    val h: BigInteger,
-    val x: BigInteger,
-    val k: BigInteger,
-    val sqrtN3: BigInteger,
-    val sqrtN3m1o2: BigInteger,
-)
-
 val defaultEc = EC(
     q,
     a,
@@ -114,21 +102,21 @@ val defaultEc = EC(
     x,
     k,
     sqrtN3,
-    sqrtN3m1o2,
+    sqrtN3m1o2
 )
 
-
-val defaultEcTwist: EC = { q,
-                           a: aTwist,
-                           b: bTwist,
-                           gx,
-                           gy,
-                           g2x,
-                           g2y,
-                           n,
-                           h: hEff,
-                           x,
-                           k,
-                           sqrtN3,
-                           sqrtN3m1o2,
-}
+val defaultEcTwist = ECTwist(
+    q,
+    aTwist,
+    bTwist,
+    gx,
+    gy,
+    g2x,
+    g2y,
+    n,
+    hEff,
+    x,
+    k,
+    sqrtN3,
+    sqrtN3m1o2
+)

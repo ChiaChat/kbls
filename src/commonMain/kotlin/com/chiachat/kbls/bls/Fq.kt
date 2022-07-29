@@ -1,4 +1,4 @@
-package com.chiachat.kbls.crypto.bls.constants
+package com.chiachat.kbls.bls
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
