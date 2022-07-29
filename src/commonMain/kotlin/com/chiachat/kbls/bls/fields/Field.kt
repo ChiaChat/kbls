@@ -20,7 +20,9 @@ abstract class Field<T : Field<T>> {
     abstract override fun toString(): String
 
     abstract fun negate(): Field<T>
+    operator fun unaryMinus(): Field<T> = negate()
     abstract fun inverse(): Field<T>
+    operator fun not(): Field<T> = inverse()
     abstract fun qiPower(i: Int): Field<T>
     abstract fun pow(exponent: BigInteger): Field<T>
 
@@ -30,12 +32,20 @@ abstract class Field<T : Field<T>> {
 
     abstract fun add(value: Field<*>): Field<*>
     abstract fun add(value: BigInteger): Field<*>
+    operator fun plus(value: Field<*>): Field<*> = add(value)
+    operator fun plus(value: BigInteger): Field<*> = add(value)
     abstract fun subtract(value: Field<*>): Field<*>
     abstract fun subtract(value: BigInteger): Field<*>
+    operator fun minus(value: Field<*>): Field<*> = subtract(value)
+    operator fun minus(value: BigInteger): Field<*> = subtract(value)
     abstract fun multiply(value: Field<*>): Field<*>
     abstract fun multiply(value: BigInteger): Field<*>
+    operator fun times(value: Field<*>): Field<*> = multiply(value)
+    operator fun times(value: BigInteger): Field<*> = multiply(value)
     abstract fun divide(value: Field<*>): Field<*>
     abstract fun divide(value: BigInteger): Field<*>
+    operator fun div(value: Field<*>): Field<*> = divide(value)
+    operator fun div(value: BigInteger): Field<*> = divide(value)
 
     abstract fun equalTo(value: Field<*>): Boolean
     abstract fun equalTo(value: BigInteger): Boolean
