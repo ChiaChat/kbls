@@ -1,5 +1,6 @@
 package com.chiachat.kbls.bls.fields
 
+import com.chiachat.kbls.bech32.KHex
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 abstract class Field<T: Field<T>> {
@@ -21,11 +22,12 @@ abstract class Field<T: Field<T>> {
 
     abstract fun toBytes(): UByteArray
 
-    abstract fun fromBytes(bytes: UByteArray, q: BigInteger): T
+    abstract fun toHex(): KHex
 
-    abstract fun pow(other: Any): T
 
-    abstract fun qi_power(i: BigInteger): T
+    abstract fun pow(exponent: BigInteger): T
+
+    abstract fun qiPower(i: Int): T
 
     abstract fun inverse(): T
 
@@ -37,5 +39,10 @@ abstract class Field<T: Field<T>> {
 
     abstract fun one(Q: BigInteger): T
 
+    abstract fun fromBytes(Q: BigInteger, bytes: UByteArray): T
+
+    abstract fun fromHex(Q: BigInteger, hex: KHex): T
+
     abstract fun fromFq(Q: BigInteger, fq: Fq): T
+
 }

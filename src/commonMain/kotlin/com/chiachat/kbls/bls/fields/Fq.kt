@@ -59,23 +59,15 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
         return value.toUByteArray()
     }
 
-    override fun fromBytes(bytes: UByteArray, q: BigInteger): Fq {
-        if (bytes.size != 48) {
-            throw InvalidByteArraySizeException()
-        } else {
-            return Fq(q, BigInteger.fromUByteArray(bytes, Sign.POSITIVE))
-        }
-    }
-
-    override infix fun pow(other: Any): Fq {
-        return when (other) {
+    override infix fun pow(exponent: BigInteger): Fq {
+        return when (exponent) {
             0 -> Fq(Q, ONE)
             1 -> Fq(Q, value)
             is BigInteger -> {
-                if (other % 2 == ZERO) {
-                    Fq(Q, value * value) `pow` (other / 2)
+                if (exponent % 2 == ZERO) {
+                    Fq(Q, value * value) `pow` (exponent / 2)
                 } else {
-                    (Fq(Q, value * value) `pow` (other / TWO)) * this
+                    (Fq(Q, value * value) `pow` (exponent / TWO)) * this
                 }
             }
 
@@ -83,7 +75,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
         }
     }
 
-    override fun qi_power(i: BigInteger): Fq {
+    override fun qiPower(i: Int): Fq {
         return this
     }
 
@@ -131,16 +123,17 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
 
         var S = ZERO
         var q = Q - ONE
-        while(q % TWO == ZERO){
+        while (q % TWO == ZERO) {
             q /= TWO
             S += ONE
         }
 
         var z = ZERO
-        for(i in ZERO .. Q){
+        for (i in ZERO..Q) {
             var euler = i.pow((Q - ONE) / TWO) % Q
-            if(euler == BigInteger(-1) % Q)
+            if (euler == BigInteger(-1) % Q) {
                 z = i
+            }
             break
         }
 
@@ -148,18 +141,18 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
 
         var c = z.pow(q) % Q
         var t = value.pow(q) % Q
-        var R = value.pow((q + ONE)/ TWO) % Q
+        var R = value.pow((q + ONE) / TWO) % Q
 
-        while (true){
-            if(t == ZERO) return Fq(Q, ZERO)
-            if(t == ONE) return Fq(Q, R)
+        while (true) {
+            if (t == ZERO) return Fq(Q, ZERO)
+            if (t == ONE) return Fq(Q, R)
             var i = ZERO
             var f = t
-            while (f != ONE){
+            while (f != ONE) {
                 f = f.pow(TWO) % Q
                 i += ONE
             }
-            val exp1 =  TWO.pow(M - i - ONE) % Q
+            val exp1 = TWO.pow(M - i - ONE) % Q
             var b = c.pow(exp1) % Q
 
             M = i
@@ -177,7 +170,23 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
         return Fq(Q, ONE)
     }
 
+    override fun fromHex(Q: BigInteger, hex: KHex): Fq {
+        return nil.fromBytes(Q, hex.toUByteArray())
+    }
+
     override fun fromFq(Q: BigInteger, fq: Fq): Fq {
         return fq
+    }
+
+    override fun fromBytes(q: BigInteger, bytes: UByteArray): Fq {
+        if (bytes.size != 48) {
+            throw InvalidByteArraySizeException()
+        } else {
+            return Fq(q, BigInteger.fromUByteArray(bytes, Sign.POSITIVE))
+        }
+    }
+
+    companion object {
+        val nil = Fq(ONE, ZERO)
     }
 }

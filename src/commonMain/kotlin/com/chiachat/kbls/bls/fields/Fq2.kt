@@ -6,12 +6,12 @@ class Fq2(
     override val Q: BigInteger,
     x: Fq,
     y: Fq
-): FieldExtBase<Fq>(Q, listOf(x, y)) {
+): FieldExt<Fq>(Q, listOf(x, y)) {
     override val extension: Int = 2
     override val embedding = 2
-    override val root: Fq = Fq(Q, BigInteger(-1))
+    override var root: Fq = Fq(Q, BigInteger(-1))
 
-    override fun inverse(): FieldExtBase<Fq> {
+    override fun inverse(): FieldExt<Fq> {
         val a = this.elements[0]
         val b = this.elements[1]
         val factor = (a * a + b * b).inverse()
@@ -24,7 +24,7 @@ class Fq2(
         return Fq2(Q, a - b, a + b)
     }
 
-    override fun modSqrt(): FieldExtBase<Fq> {
+    override fun modSqrt(): FieldExt<Fq> {
         val a0 = this.elements[0]
         val a1 = this.elements[1]
         if (a1 == this.basefield.one(this.Q))
@@ -42,5 +42,9 @@ class Fq2(
         val x0 = delta.modSqrt();
         val x1 = a1 * (Fq(this.Q, TWO) * (x0).inverse())
         return Fq2(this.Q, x0, x1)
+    }
+
+    companion object {
+        val nil = Fq2(ONE, Fq.nil, Fq.nil)
     }
 }
