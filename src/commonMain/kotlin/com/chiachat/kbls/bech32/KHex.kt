@@ -5,6 +5,7 @@ import com.ionspin.kotlin.bignum.integer.Sign
 
 class KHex(val value: String) {
     constructor(intValue: Int) : this(intToHex(intValue))
+    constructor(bigIntValue: BigInteger): this(bigIntToHex(bigIntValue))
 
     fun toUByteArray(hexStr: String = value): UByteArray {
         if (hexStr.length % 2 != 0) throw IllegalStateException("Hex string must have an even length")
@@ -20,6 +21,10 @@ class KHex(val value: String) {
         }
     }
 
+    override fun toString(): String {
+        return value
+    }
+
     companion object {
         private const val HEXCODE = "0123456789ABCDEF"
 
@@ -32,6 +37,17 @@ class KHex(val value: String) {
                 num /= 16
             }
             return builder.reverse().toString()
+        }
+
+        private fun bigIntToHex(intValue: BigInteger): String{
+                var num = intValue
+                val builder = StringBuilder()
+                while (num > 0) {
+                    val hexDigit: Int = (num % 16).intValue(true)
+                    builder.append(HEXCODE[hexDigit])
+                    num /= 16
+                }
+                return builder.reverse().toString()
         }
     }
 }
