@@ -4,7 +4,7 @@ import com.chiachat.kbls.bech32.KHex
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 
-class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
+class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     override val extension: Int = 1
 
     val value: BigInteger
@@ -59,19 +59,19 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field<Fq>() {
         return value.toUByteArray()
     }
 
+    override fun toHex(): KHex = KHex(value)
+
     override infix fun pow(exponent: BigInteger): Fq {
         return when (exponent) {
-            0 -> Fq(Q, ONE)
-            1 -> Fq(Q, value)
-            is BigInteger -> {
+            BigInteger.ZERO -> Fq(Q, ONE)
+            BigInteger.ONE -> Fq(Q, value)
+            else -> {
                 if (exponent % 2 == ZERO) {
-                    Fq(Q, value * value) `pow` (exponent / 2)
+                    Fq(Q, value * value) pow (exponent / 2)
                 } else {
-                    (Fq(Q, value * value) `pow` (exponent / TWO)) * this
+                    (Fq(Q, value * value) pow (exponent / TWO)) * this
                 }
             }
-
-            else -> throw NotImplementedException()
         }
     }
 

@@ -6,26 +6,28 @@ import com.chiachat.kbls.bls.constants.FrobIndex
 import com.chiachat.kbls.bls.constants.getFrob
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
-abstract class FieldExt<T : Field<T>>(
+// Fq6: FieldExt<Fq2>
+// construct: FieldExt
+sealed class FieldExt<T> (
     override val Q: BigInteger,
     val elements: List<T>
-) : Field<FieldExt<T>>() {
+) : Field() {
 
     abstract var root: T
     abstract val embedding: Int
     val basefield: T = elements[0]
 
-    abstract fun construct(Q: BigInteger, elements: List<T>): FieldExt<T>
-    fun withRoot(root: T): FieldExt<T> {
+    abstract fun construct(Q: BigInteger, elements: List<Field>): Field
+    fun withRoot(root: T): FieldExt<Field> {
         this.root = root
         return this
     }
 
-    fun constructWithRoot(Q: BigInteger, elements: List<T>): FieldExt<T> {
+    fun constructWithRoot(Q: BigInteger, elements: List<Field>): FieldExt<Field> {
         return this.construct(Q, elements).withRoot(this.root)
     }
 
-    override fun fromBytes(Q: BigInteger, bytes: UByteArray): FieldExt<T> {
+    override fun fromBytes(Q: BigInteger, bytes: UByteArray): FieldExt<Field> {
         val length = this.extension * 48
         if (bytes.size != 48) {
             throw Exception("Expected $length bytes")
@@ -41,19 +43,19 @@ abstract class FieldExt<T : Field<T>>(
         )
     }
 
-    override fun fromHex(Q: BigInteger, hex: KHex): FieldExt<T> {
+    override fun fromHex(Q: BigInteger, hex: KHex): FieldExt<Field> {
         return this.fromBytes(Q, hex.toUByteArray())
     }
 
-    override fun fromFq(Q: BigInteger, fq: Fq): FieldExt<T> {
+    override fun fromFq(Q: BigInteger, fq: Fq): FieldExt<Field> {
         val y = this.basefield.fromFq(Q, fq);
         val z = this.basefield.zero(Q);
-        val elements = mutableListOf<T>()
+        val elements = mutableListOf<Field>()
         for(i in elements.indices){
             elements.add(if(i == 0) y else z)
         }
         val result = this.construct(Q, elements)
-        if (this is Fq2) result.root = Fq(Q, N1) as T
+        if (this is Fq2) result.root = Fq(Q, N1)
 //        else if (this is Fq6)
 //            result.root = new Fq2(Q, Fq.nil.one(Q), Fq.nil.one(Q)) as any;
 //        else if (this instanceof Fq12)
@@ -67,11 +69,11 @@ abstract class FieldExt<T : Field<T>>(
 
     }
 
-    override fun zero(Q: BigInteger): FieldExt<T> {
+    override fun zero(Q: BigInteger): FieldExt {
         return this.fromFq(Q, Fq(Q, ZERO))
     }
 
-    override fun one(Q: BigInteger): FieldExt<T> {
+    override fun one(Q: BigInteger): FieldExt {
         return this.fromFq(Q, Fq(Q, ONE))
     }
 
@@ -91,11 +93,11 @@ abstract class FieldExt<T : Field<T>>(
         return "Fq${this.extension}${elements.joinToString(",")}"
     }
 
-    override operator fun unaryMinus(): FieldExt<T> {
+    override operator fun unaryMinus(): FieldExt {
         return this.constructWithRoot(Q, elements.map { -it })
     }
 
-    override fun qiPower(i: Int): FieldExt<T> {
+    override fun qiPower(i: Int): FieldExt {
         if(this.Q != BLS12381.q) throw Exception("Invalid Q in qiPower")
         var i = i % this.extension
         if(i == 0) return this
@@ -107,11 +109,11 @@ abstract class FieldExt<T : Field<T>>(
         )
     }
 
-    override fun pow(exponent: BigInteger): FieldExt<T> {
+    override fun pow(exponent: BigInteger): FieldExt {
         var exp = exponent
         if(exp < ZERO) throw Exception("Negative exponent in pow")
         var result = this.one(this.Q).withRoot(this.root)
-        var base: FieldExt<T> = this
+        var base: FieldExt<Field> = this
         while(exp != ZERO){
             if(exp.and(ONE) != ZERO) result *= base
             base *= base
@@ -120,7 +122,7 @@ abstract class FieldExt<T : Field<T>>(
         return result
     }
 
-    override fun plus(other: Any): FieldExt<T> {
+    override fun plus(other: Any): FieldExt {
         TODO("Not yet implemented")
     }
 
