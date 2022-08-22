@@ -18,8 +18,6 @@ sealed class Field {
 
     abstract operator fun compareTo(other: Field): Int
 
-    abstract fun toStringFull(): String
-
     abstract fun toBytes(): UByteArray
 
     abstract fun toHex(): KHex
@@ -33,8 +31,6 @@ sealed class Field {
     abstract fun inverse(): Field
 
     abstract operator fun div(other: Any): Field
-
-    abstract fun modSqrt(): Field
 
     abstract fun zero(Q: BigInteger): Field
 

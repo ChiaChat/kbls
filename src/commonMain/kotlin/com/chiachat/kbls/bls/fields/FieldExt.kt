@@ -9,7 +9,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 // Fq6: FieldExt<Fq2>
 // construct: FieldExt
 sealed class FieldExt(
-    override val Q: BigInteger, val elements: List<Field>
+    val elements: List<Field>
 ) : Field() {
 
     abstract var root: Field
@@ -106,14 +106,6 @@ sealed class FieldExt(
     }
 
     override fun pow(exponent: BigInteger): Field {
-//        let result = this.one(this.Q).withRoot(this.root);
-//        let base: FieldExt<T> = this;
-//        while (exponent != 0n) {
-//            if (exponent & 1n) result = result.multiply(base) as this;
-//            base = base.multiply(base) as this;
-//            exponent >>= 1n;
-//        }
-//        return result;
         var exp = exponent
         if (exp < ZERO) throw Exception("Negative exponent in pow")
         var result: Field = this.one(this.Q).withRoot(this.root)
@@ -199,7 +191,8 @@ sealed class FieldExt(
         } else return super.equals(other) && this.Q == other.Q
     }
 
-    operator fun compareTo(other: FieldExt): Int {
+    override operator fun compareTo(other: Field): Int {
+        if(other !is FieldExt) throw InvalidOperandException()
         for(i in this.elements.indices.reversed()){
             val a = this.elements[i]
             val b = other.elements[i]
@@ -207,6 +200,8 @@ sealed class FieldExt(
         }
         return 0
     }
+
+    override fun toBool(): Boolean = this.elements.all { it.toBool() }
 }
 
 class InvalidOperandException() : UnsupportedOperationException("BigInteger or Field expected as operands")

@@ -6,10 +6,14 @@ class Fq2(
     override val Q: BigInteger,
     x: Fq,
     y: Fq
-): FieldExt(Q, listOf(x, y)) {
+): FieldExt(listOf(x, y)) {
     override val extension: Int = 2
     override val embedding = 2
-    override var root  = Fq(Q, BigInteger(-1))
+    override fun construct(Q: BigInteger, elements: List<Field>): FieldExt {
+        return Fq2(Q, elements[0] as Fq, elements[1] as Fq)
+    }
+
+    override var root: Field = Fq(Q, BigInteger(-1))
 
     override fun inverse(): FieldExt {
         val a = this.elements[0] as Fq
@@ -18,7 +22,7 @@ class Fq2(
         return Fq2(Q, a * factor, -b * factor)
     }
 
-    fun mulByNonresidue(): Fq2 {
+    fun mulByNonResidue(): Fq2 {
         val a = this.elements[0] as Fq
         val b = this.elements[1] as Fq
         return Fq2(Q, a - b, a + b)

@@ -38,7 +38,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         }
     }
 
-    override fun compareTo(other: Any): Int {
+    override fun compareTo(other: Field): Int {
         return when (other) {
             is Fq -> value.compareTo(other.value)
             else -> throw NotImplementedException()
@@ -51,7 +51,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         return "Fq($s2)"
     }
 
-    override fun toStringFull(): String {
+    fun toStringFull(): String {
         return "Fq(${KHex(value)})"
     }
 
@@ -60,6 +60,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     }
 
     override fun toHex(): KHex = KHex(value)
+    override fun toBool(): Boolean = true
 
     override infix fun pow(exponent: BigInteger): Fq {
         return when (exponent) {
@@ -95,7 +96,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         return Fq(Q, x0)
     }
 
-    override fun floorDiv(other: Any): Fq {
+    override operator fun div(other: Any): Fq {
         val otherFq: Fq = when (other) {
             is BigInteger -> Fq(Q, other)
             is Fq -> other
@@ -104,7 +105,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         return this * otherFq.inverse()
     }
 
-    override fun modSqrt(): Fq {
+    fun modSqrt(): Fq {
         if (value == ZERO) {
             return Fq(Q, ZERO)
         }
