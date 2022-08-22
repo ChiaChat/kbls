@@ -6,7 +6,7 @@ class Fq2(
     override val Q: BigInteger,
     x: Fq,
     y: Fq
-): FieldExt<Fq>(Q, listOf(x, y)) {
+): FieldExt(Q, listOf(x, y)) {
     override val extension: Int = 2
     override val embedding = 2
     override var root  = Fq(Q, BigInteger(-1))

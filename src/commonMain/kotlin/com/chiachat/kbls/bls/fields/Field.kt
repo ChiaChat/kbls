@@ -16,7 +16,7 @@ sealed class Field {
 
     abstract operator fun times(other: Any): Field
 
-    abstract operator fun compareTo(other: Any): Int
+    abstract operator fun compareTo(other: Field): Int
 
     abstract fun toStringFull(): String
 
@@ -24,6 +24,7 @@ sealed class Field {
 
     abstract fun toHex(): KHex
 
+    abstract fun toBool(): Boolean
 
     abstract fun pow(exponent: BigInteger): Field
 
@@ -31,7 +32,7 @@ sealed class Field {
 
     abstract fun inverse(): Field
 
-    abstract fun floorDiv(other: Any): Field
+    abstract operator fun div(other: Any): Field
 
     abstract fun modSqrt(): Field
 

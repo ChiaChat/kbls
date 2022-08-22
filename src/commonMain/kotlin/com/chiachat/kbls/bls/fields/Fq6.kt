@@ -7,8 +7,7 @@ class Fq6(
     x: Fq2,
     y: Fq2,
     z: Fq2
-): FieldExt<Fq2>(Q, listOf(x, y, z)) {
-
+): FieldExt(Q, listOf(x, y, z)) {
     override val extension: Int = 6
 
 

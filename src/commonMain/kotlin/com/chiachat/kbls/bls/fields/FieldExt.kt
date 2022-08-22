@@ -8,26 +8,25 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 
 // Fq6: FieldExt<Fq2>
 // construct: FieldExt
-sealed class FieldExt<T> (
-    override val Q: BigInteger,
-    val elements: List<T>
+sealed class FieldExt(
+    override val Q: BigInteger, val elements: List<Field>
 ) : Field() {
 
-    abstract var root: T
+    abstract var root: Field
     abstract val embedding: Int
-    val basefield: T = elements[0]
+    val basefield: Field = elements[0]
 
-    abstract fun construct(Q: BigInteger, elements: List<Field>): Field
-    fun withRoot(root: T): FieldExt<Field> {
+    abstract fun construct(Q: BigInteger, elements: List<Field>): FieldExt
+    fun withRoot(root: Field): FieldExt {
         this.root = root
         return this
     }
 
-    fun constructWithRoot(Q: BigInteger, elements: List<Field>): FieldExt<Field> {
+    fun constructWithRoot(Q: BigInteger, elements: List<Field>): FieldExt {
         return this.construct(Q, elements).withRoot(this.root)
     }
 
-    override fun fromBytes(Q: BigInteger, bytes: UByteArray): FieldExt<Field> {
+    override fun fromBytes(Q: BigInteger, bytes: UByteArray): FieldExt {
         val length = this.extension * 48
         if (bytes.size != 48) {
             throw Exception("Expected $length bytes")
@@ -37,36 +36,32 @@ sealed class FieldExt<T> (
         for (i in elements.indices) {
             elements.add(bytes.slice(i * embeddedSize..(i + 1) * embeddedSize).toUByteArray())
         }
-        return construct(
-            Q,
-            elements.reversed().map { this.basefield.fromBytes(Q, it) }
-        )
+        return construct(Q, elements.reversed().map { this.basefield.fromBytes(Q, it) })
     }
 
-    override fun fromHex(Q: BigInteger, hex: KHex): FieldExt<Field> {
+    override fun fromHex(Q: BigInteger, hex: KHex): FieldExt {
         return this.fromBytes(Q, hex.toUByteArray())
     }
 
-    override fun fromFq(Q: BigInteger, fq: Fq): FieldExt<Field> {
+    override fun fromFq(Q: BigInteger, fq: Fq): FieldExt {
         val y = this.basefield.fromFq(Q, fq);
         val z = this.basefield.zero(Q);
         val elements = mutableListOf<Field>()
-        for(i in elements.indices){
-            elements.add(if(i == 0) y else z)
+        for (i in elements.indices) {
+            elements.add(if (i == 0) y else z)
         }
         val result = this.construct(Q, elements)
-        if (this is Fq2) result.root = Fq(Q, N1)
-//        else if (this is Fq6)
-//            result.root = new Fq2(Q, Fq.nil.one(Q), Fq.nil.one(Q)) as any;
-//        else if (this instanceof Fq12)
-//            result.root = new Fq6(
-//                    Q,
-//        Fq2.nil.zero(Q),
-//        Fq2.nil.one(Q),
-//        Fq2.nil.zero(Q)
-//        ) as any;
+        when (this) {
+            is Fq2 -> result.root = Fq(Q, N1)
+            is Fq6 -> result.root = Fq2(Q, Fq.nil.one(Q), Fq.nil.one(Q))
+            is Fq12 -> result.root = Fq6(
+                Q,
+                Fq2.nil.zero(Q) as Fq2,
+                Fq2.nil.one(Q) as Fq2,
+                Fq2.nil.zero(Q) as Fq2,
+            )
+        }
         return result;
-
     }
 
     override fun zero(Q: BigInteger): FieldExt {
@@ -79,7 +74,7 @@ sealed class FieldExt<T> (
 
     override fun toBytes(): UByteArray {
         val bytes = mutableListOf<UByte>()
-        for(i in this.elements.indices.reversed()){
+        for (i in this.elements.indices.reversed()) {
             bytes.addAll(this.elements[i].toBytes())
         }
         return bytes.toUByteArray()
@@ -98,58 +93,120 @@ sealed class FieldExt<T> (
     }
 
     override fun qiPower(i: Int): FieldExt {
-        if(this.Q != BLS12381.q) throw Exception("Invalid Q in qiPower")
-        var i = i % this.extension
-        if(i == 0) return this
-        return this.constructWithRoot(
-            this.Q,
-            this.elements.mapIndexed { index, element ->
-                if(index == 0) element.qiPower(i) else element.qiPower(i) * getFrob(FrobIndex(this.extension, i, index))
-            }
-        )
+        if (this.Q != BLS12381.q) throw Exception("Invalid Q in qiPower")
+        val i = i % this.extension
+        if (i == 0) return this
+        return this.constructWithRoot(this.Q, this.elements.mapIndexed { index, element ->
+            if (index == 0) element.qiPower(i) else element.qiPower(i) * getFrob(
+                FrobIndex(
+                    this.extension, i, index
+                )
+            )
+        })
     }
 
-    override fun pow(exponent: BigInteger): FieldExt {
+    override fun pow(exponent: BigInteger): Field {
+//        let result = this.one(this.Q).withRoot(this.root);
+//        let base: FieldExt<T> = this;
+//        while (exponent != 0n) {
+//            if (exponent & 1n) result = result.multiply(base) as this;
+//            base = base.multiply(base) as this;
+//            exponent >>= 1n;
+//        }
+//        return result;
         var exp = exponent
-        if(exp < ZERO) throw Exception("Negative exponent in pow")
-        var result = this.one(this.Q).withRoot(this.root)
-        var base: FieldExt<Field> = this
-        while(exp != ZERO){
-            if(exp.and(ONE) != ZERO) result *= base
+        if (exp < ZERO) throw Exception("Negative exponent in pow")
+        var result: Field = this.one(this.Q).withRoot(this.root)
+        var base: Field = this
+        while (exp != ZERO) {
+            if (exp.and(ONE) != ZERO) result *= base
             base *= base
             exp = exp.shr(1)
         }
         return result
     }
 
-    override fun plus(other: Any): FieldExt {
-        TODO("Not yet implemented")
+    override operator fun plus(other: Any): FieldExt {
+        val otherElements: MutableList<Field> = mutableListOf()
+        if (other is FieldExt && other.extension == this.extension) {
+            otherElements += other.elements
+        } else if (other is BigInteger) {
+            otherElements += this.elements.map { this.basefield.zero(this.Q) }
+            otherElements[0] = otherElements[0] + other
+        } else {
+            throw UnsupportedOperationException("Invalid operator $other")
+        }
+        val addedElements = this.elements.mapIndexed { i, element -> element + otherElements[i] }
+        return this.constructWithRoot(this.Q, addedElements)
     }
 
-    companion object {
-//        fun fieldBuilder(): FieldExtBase{
-//            var newArgs = args.toList()
-//            var argExtension: Int
-//            try {
-//                argExtension = (args[0] as FieldExtBase).extension
-//                (args[1] as FieldExtBase).extension
-//            }catch (e: Exception){
-//                if(args.size != 2) throw(Exception("Invalid number of arguments"))
-//                argExtension = 1
-//                newArgs = args.map { Fq(Q, it.Q) }
-//            }
-//            if(argExtension != 1) {
-//                if(args.size != cls.embedding) throw Exception("Invalid number of arguments")
-//                for(arg in newArgs) {
-//                    if(arg.extension != argExtension) throw Exception("Argument with invalid extension")
-//                }
-//            }
-//            if(newArgs.any { it.extension != cls.basefield.extension } ) throw Exception("newargs has invalid extension")
-//
-//            // TODO: Test whether this is correct interpretation of python code
-//            // TODO: Might just pass in Q instead of newArgs.first().Q
-//            val ret = fieldBuilder(cls, newArgs.first().Q, *newArgs.drop(1).toTypedArray())
-//            return ret.copy(Q = Q)
-//        }
+    override operator fun times(other: Any): Field {
+        when (other) {
+            is BigInteger -> {
+                return this.constructWithRoot(this.Q, this.elements.map { it * other })
+            }
+            is Field -> {
+                if (this.extension < other.extension) throw UnsupportedOperationException("Extension must be lower than operand")
+                val newElements = this.elements.map { this.basefield.zero(this.Q) }.toMutableList()
+                for ((i, x) in this.elements.withIndex()) {
+                    if (other is FieldExt && other.extension == this.extension) {
+                        for ((j, y) in other.elements.withIndex()) {
+                            if (x.toBool() && y.toBool()) {
+                                if (i + j >= this.embedding) {
+                                    newElements[(i + j) % this.embedding] += x * y * this.root
+                                } else {
+                                    newElements[(i + j) % this.embedding] += x * y
+                                }
+                            }
+                        }
+                    } else {
+                        if (x.toBool()) newElements[i] = x * other
+                    }
+                }
+                return this.constructWithRoot(Q, newElements)
+            }
+            else -> throw InvalidOperandException()
+        }
+    }
+
+    override operator fun minus(other: Any): Field {
+        val negated = when (other) {
+            is BigInteger -> -other
+            is Field -> -other
+            else -> throw InvalidOperandException()
+        }
+        return this + negated
+    }
+
+    override operator fun div(other: Any): Field {
+        val inverted = when (other) {
+            is BigInteger -> ONE / other
+            is Field -> other.inverse()
+            else -> throw InvalidOperandException()
+        }
+        return this * inverted
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (!(other is FieldExt && other.extension == this.extension)) {
+            if (other is BigInteger || (other is FieldExt && this.extension > other.extension)) {
+                for (i in this.elements.indices) {
+                    if (this.elements[i] != this.root.zero(this.Q)) return false;
+                }
+                return this.elements[0] == other;
+            }
+            throw InvalidOperandException()
+        } else return super.equals(other) && this.Q == other.Q
+    }
+
+    operator fun compareTo(other: FieldExt): Int {
+        for(i in this.elements.indices.reversed()){
+            val a = this.elements[i]
+            val b = other.elements[i]
+            if(a > b) return 1 else if (a < b) return -1
+        }
+        return 0
     }
 }
+
+class InvalidOperandException() : UnsupportedOperationException("BigInteger or Field expected as operands")
