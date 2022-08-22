@@ -13,7 +13,7 @@ class Fq2(
         return Fq2(Q, elements[0] as Fq, elements[1] as Fq)
     }
 
-    override var root: Field = Fq(Q, BigInteger(-1))
+    override var root: Field = Fq(Q, N1)
 
     override fun inverse(): FieldExt {
         val a = this.elements[0] as Fq
@@ -28,11 +28,11 @@ class Fq2(
         return Fq2(Q, a - b, a + b)
     }
 
-    override fun modSqrt(): FieldExt {
+    fun modSqrt(): Fq2 {
         val a0 = this.elements[0] as Fq
         val a1 = this.elements[1] as Fq
         if (a1 == this.basefield.one(this.Q))
-            return this.fromFq(this.Q, a0.modSqrt())
+            return this.fromFq(this.Q, a0.modSqrt()) as Fq2
         
         var alpha = a0.pow(TWO) + (a1.pow(TWO))
         var gamma = alpha.pow((this.Q - ONE) / TWO);

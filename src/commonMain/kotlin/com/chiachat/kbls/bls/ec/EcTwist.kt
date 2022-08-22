@@ -1,7 +1,7 @@
 package com.chiachat.kbls.bls.ec
 
-import com.chiachat.kbls.bls.Fq
-import com.chiachat.kbls.bls.Fq2
+import com.chiachat.kbls.bls.fields.Fq
+import com.chiachat.kbls.bls.fields.Fq2
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 data class ECTwist(

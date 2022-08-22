@@ -6,11 +6,10 @@ import com.ionspin.kotlin.bignum.integer.Sign
 
 class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     override val extension: Int = 1
-
     val value: BigInteger
 
     init {
-        value = otherValue % Q
+        value = otherValue.mod(Q)
     }
 
     override fun unaryMinus(): Fq {
@@ -33,6 +32,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
     override fun times(other: Any): Fq {
         return when (other) {
+            is BigInteger -> Fq(this.Q, this.value * other)
             is Fq -> Fq(Q, value * other.value)
             else -> throw NotImplementedException()
         }
@@ -46,9 +46,10 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     }
 
     override fun toString(): String {
-        val s = KHex(value).toString()
-        val s2 = if (s.length > 10) s.take(8) + ".." + s.takeLast(5) else s
-        return "Fq($s2)"
+        return toStringFull()
+//        val s = KHex(value).toString()
+//        val s2 = if (s.length > 10) s.take(8) + ".." + s.takeLast(5) else s
+//        return "Fq($s2)"
     }
 
     fun toStringFull(): String {
@@ -177,6 +178,11 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
     override fun fromFq(Q: BigInteger, fq: Fq): Fq {
         return fq
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null) return false
+        return other is Fq && this.value == other.value && this.Q == other.Q
     }
 
     override fun fromBytes(q: BigInteger, bytes: UByteArray): Fq {

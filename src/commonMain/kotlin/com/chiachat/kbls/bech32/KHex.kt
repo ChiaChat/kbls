@@ -23,7 +23,7 @@ class KHex(val value: String) {
     }
 
     override fun toString(): String {
-        return value
+        return "0x$value"
     }
 
     companion object {

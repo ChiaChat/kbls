@@ -44,10 +44,10 @@ sealed class FieldExt(
     }
 
     override fun fromFq(Q: BigInteger, fq: Fq): FieldExt {
-        val y = this.basefield.fromFq(Q, fq);
-        val z = this.basefield.zero(Q);
+        val y = this.basefield.fromFq(Q, fq)
+        val z = this.basefield.zero(Q)
         val elements = mutableListOf<Field>()
-        for (i in elements.indices) {
+        for (i in this.elements.indices) {
             elements.add(if (i == 0) y else z)
         }
         val result = this.construct(Q, elements)
@@ -60,6 +60,7 @@ sealed class FieldExt(
                 Fq2.nil.one(Q) as Fq2,
                 Fq2.nil.zero(Q) as Fq2,
             )
+            else -> throw InvalidOperandException()
         }
         return result;
     }
@@ -85,7 +86,7 @@ sealed class FieldExt(
     }
 
     override fun toString(): String {
-        return "Fq${this.extension}${elements.joinToString(",")}"
+        return "Fq${this.extension}: ${elements.joinToString(", ")}"
     }
 
     override operator fun unaryMinus(): FieldExt {
@@ -122,11 +123,10 @@ sealed class FieldExt(
         val otherElements: MutableList<Field> = mutableListOf()
         if (other is FieldExt && other.extension == this.extension) {
             otherElements += other.elements
-        } else if (other is BigInteger) {
+        } else {
+            if((other is Field && other.extension > this.extension) || other is BigInteger) throw InvalidOperandException()
             otherElements += this.elements.map { this.basefield.zero(this.Q) }
             otherElements[0] = otherElements[0] + other
-        } else {
-            throw UnsupportedOperationException("Invalid operator $other")
         }
         val addedElements = this.elements.mapIndexed { i, element -> element + otherElements[i] }
         return this.constructWithRoot(this.Q, addedElements)
@@ -180,15 +180,18 @@ sealed class FieldExt(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (!(other is FieldExt && other.extension == this.extension)) {
-            if (other is BigInteger || (other is FieldExt && this.extension > other.extension)) {
-                for (i in this.elements.indices) {
-                    if (this.elements[i] != this.root.zero(this.Q)) return false;
+        if(!(other is FieldExt && other.extension == this.extension)){
+            if(other is BigInteger || (other is FieldExt && this.extension > other.extension)){
+                for(i in this.elements.indices){
+                    if (this.elements[i] != this.root.zero(this.Q))
+                        return false
                 }
-                return this.elements[0] == other;
+                return this.elements[0] == other
             }
             throw InvalidOperandException()
-        } else return super.equals(other) && this.Q == other.Q
+        }else {
+            return this.elements.withIndex().all {(i, e) -> e == other.elements[i] } && this.Q == Q
+        }
     }
 
     override operator fun compareTo(other: Field): Int {

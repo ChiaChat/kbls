@@ -14,9 +14,17 @@ class Fq12(override val Q: BigInteger, x: Fq6, y: Fq6) : FieldExt(listOf(x, y)) 
 
     override fun inverse(): Field {
         val (a, b) = this.elements.map { it as Fq6 };
-        val factor = a * a - (((b * b) as Fq6).mulByNonResidue()).inverse();
+        val factor = (a * a)
+            .minus(((b * b) as Fq6).mulByNonResidue())
+            .inverse()
         return Fq12(
-            this.Q, (a * factor) as Fq6, (-b * factor) as Fq6
+            this.Q,
+            (a * factor) as Fq6,
+            (b.unaryMinus().times(factor)) as Fq6
         )
+    }
+
+    companion object {
+        val nil = Fq12(ONE, Fq6.nil, Fq6.nil)
     }
 }

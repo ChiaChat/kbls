@@ -11,7 +11,7 @@ data class FrobIndex(
     val j: Int
 )
 
-fun getFrob(frobIndex: FrobIndex): Field<*> {
+fun getFrob(frobIndex: FrobIndex): Field {
     return when (frobIndex) {
         FrobIndex(2, 1, 1) -> Fq(q, N1)
         FrobIndex(6, 1, 1) -> Fq2(

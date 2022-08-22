@@ -42,4 +42,6 @@ sealed class Field {
 
     abstract fun fromFq(Q: BigInteger, fq: Fq): Field
 
+    abstract override fun equals(other: Any?): Boolean
+
 }

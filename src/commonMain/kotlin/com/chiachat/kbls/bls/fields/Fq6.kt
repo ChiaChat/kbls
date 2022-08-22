@@ -36,4 +36,8 @@ class Fq6(
         val (a, b, c) = this.elements.map { it as Fq2 }
         return Fq6(this.Q, (c * this.root) as Fq2, a, b);
     }
+
+    companion object {
+        val nil = Fq6(ONE, Fq2.nil, Fq2.nil, Fq2.nil)
+    }
 }
