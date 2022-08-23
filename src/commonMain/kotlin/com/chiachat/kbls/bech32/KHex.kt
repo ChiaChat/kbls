@@ -3,27 +3,39 @@ package com.chiachat.kbls.bech32
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 
-class KHex(val value: String) {
+class KHex(valueStr: String) {
     constructor(intValue: Int) : this(intToHex(intValue))
     constructor(bigIntValue: BigInteger) : this(bigIntToHex(bigIntValue))
     constructor(byteArray: UByteArray) : this(BigInteger.fromUByteArray(byteArray, Sign.POSITIVE))
 
-    fun toUByteArray(hexStr: String = value): UByteArray {
-        if (hexStr.length % 2 != 0) throw IllegalStateException("Hex string must have an even length")
-        return hexStr.chunked(2).map { it.toUInt(16).toByte() }.toByteArray().toUByteArray()
+    val value: String
+    val sign: Sign
+
+    init {
+        var inputValue = valueStr
+        sign = if (inputValue.contains("-")) Sign.NEGATIVE else Sign.POSITIVE
+        inputValue = inputValue.replace("-", "")
+        inputValue = if (inputValue.startsWith("0x")) {
+            inputValue.drop(2)
+        } else inputValue
+        inputValue = if (inputValue.length % 2 == 0) inputValue else "0$inputValue"
+        value = inputValue
     }
 
-    fun toBigInt(): BigInteger {
-        return if (value.startsWith("-")) {
-            val hexStr = value.drop(1)
-            BigInteger.fromUByteArray(toUByteArray(hexStr), Sign.NEGATIVE)
-        } else {
-            BigInteger.fromUByteArray(toUByteArray(value), Sign.POSITIVE)
-        }
+    val byteArray: UByteArray by lazy {
+        value
+            .chunked(2)
+            .map { it.toUInt(16).toByte() }
+            .toByteArray()
+            .toUByteArray()
+    }
+
+    val bigInt: BigInteger by lazy {
+        BigInteger.fromUByteArray(byteArray, sign)
     }
 
     override fun toString(): String {
-        return "0x$value"
+        return "${sign}0x$value"
     }
 
     companion object {

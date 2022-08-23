@@ -18,7 +18,7 @@ class KeyGenTest {
 
     @Test
     fun bech32m(){
-        val hex  = KHex(puzzleHash).toUByteArray()
+        val hex  = KHex(puzzleHash).byteArray
         val encoded: String = Bech32.encode(humanReadablePart = "xch", hex)
         assertEquals(encoded, actualAddress)
     }

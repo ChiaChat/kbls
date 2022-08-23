@@ -173,7 +173,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     }
 
     override fun fromHex(Q: BigInteger, hex: KHex): Fq {
-        return nil.fromBytes(Q, hex.toUByteArray())
+        return nil.fromBytes(Q, hex.byteArray)
     }
 
     override fun fromFq(Q: BigInteger, fq: Fq): Fq {

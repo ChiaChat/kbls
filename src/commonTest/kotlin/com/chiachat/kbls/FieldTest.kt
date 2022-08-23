@@ -21,7 +21,7 @@ class FieldTest {
     val f = (e * d) as Fq2
 
     @Test
-    fun testEquality(){
+    fun testEquality() {
         assertEquals(a, a_2)
         assertEquals(b, b_2)
         assertEquals(c, c_2)
@@ -36,12 +36,13 @@ class FieldTest {
         assertNotEquals(e, f)
     }
 
-    val e_sq = (e * e) as Fq2
-    val e_sqrt = e_sq.modSqrt()
+    val e_squared = (e * e) as Fq2
+    val e_sqrt = e_squared.modSqrt()
 
     @Test
     fun `SquareAndRoot`() {
-        assertEquals(e_sqrt.pow(TWO), e_sq)
+        assertEquals(e_squared.modSqrt(), e)
+        assertEquals(e_sqrt.pow(TWO) as Fq2, e_squared)
     }
 
     @Test
@@ -55,7 +56,8 @@ class FieldTest {
         "3012492130751239573498573249085723940848571098237509182375".toBigInteger()
     )
     val b2 = Fq(
-        "172487123095712930573140951348".toBigInteger(), "3432984572394572309458723045723849".toBigInteger()
+        "172487123095712930573140951348".toBigInteger(),
+        "3432984572394572309458723045723849".toBigInteger()
     )
     val c2 = Fq2("172487123095712930573140951348".toBigInteger(), a2, b2)
 
@@ -83,24 +85,24 @@ class FieldTest {
 
     @Test
     fun DoubleNegation() {
-        assertTrue { i.inverse().inverse() == i }
+        assertEquals(i.inverse().inverse(), i)
     }
 
     @Test
     fun `InverseRootIdentity`() {
-        assertTrue { (i.root.inverse() * i.root).equals(Fq6.nil.one("17".toBigInteger())) }
+        assertEquals((i.root.inverse() * i.root), Fq6.nil.one("17".toBigInteger()))
     }
 
     val x = Fq12("17".toBigInteger(), Fq6.nil.zero("17".toBigInteger()) as Fq6, i.root as Fq6)
 
     @Test
     fun `InverseIdentity`() {
-        assertTrue { (x.inverse() * x) == Fq12.nil.one("17".toBigInteger()) }
+        assertEquals((x.inverse() * x), Fq12.nil.one("17".toBigInteger()))
     }
 
     val j = Fq6(
         "17".toBigInteger(),
-        ((c * a) + a) as Fq2,
+        (c * a + a) as Fq2,
         Fq2.nil.zero("17".toBigInteger()) as Fq2,
         Fq2.nil.zero("17".toBigInteger()) as Fq2
     )
@@ -113,7 +115,7 @@ class FieldTest {
 
     @Test
     fun `FirstEqualsElement`() {
-        assertTrue { j.equals(((c * a) + a)) }
+        assertEquals(j, c * a + a)
     }
 
     @Test
@@ -128,16 +130,15 @@ class FieldTest {
 
     val one = Fq(q, ONE)
     val two = one + one
-    val a3 =  Fq2(q, two, two);
-    val b3 =  Fq6(q, a3, a3, a3);
-    val c3 =  Fq12(q, b3, b3);
+    val a3 = Fq2(q, two, two)
+    val b3 = Fq6(q, a3, a3, a3)
+    val c3 = Fq12(q, b3, b3)
+
     @Test
     fun `FrobCoefficients`() {
         for (base in listOf(a3, b3, c3)) {
             for (expo in 1 until base.extension) {
-                assertTrue {
-                    base.qiPower(expo) == base.pow(q.pow(expo.toBigInteger()))
-                }
+                assertEquals(base.qiPower(expo), base.pow(q.pow(expo.toBigInteger())))
             }
         }
     }

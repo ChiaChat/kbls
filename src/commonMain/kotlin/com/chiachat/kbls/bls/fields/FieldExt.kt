@@ -40,7 +40,7 @@ sealed class FieldExt(
     }
 
     override fun fromHex(Q: BigInteger, hex: KHex): FieldExt {
-        return this.fromBytes(Q, hex.toUByteArray())
+        return this.fromBytes(Q, hex.byteArray)
     }
 
     override fun fromFq(Q: BigInteger, fq: Fq): FieldExt {
@@ -58,11 +58,12 @@ sealed class FieldExt(
                 Q,
                 Fq2.nil.zero(Q) as Fq2,
                 Fq2.nil.one(Q) as Fq2,
-                Fq2.nil.zero(Q) as Fq2,
+                Fq2.nil.zero(Q) as Fq2
             )
+
             else -> throw InvalidOperandException()
         }
-        return result;
+        return result
     }
 
     override fun zero(Q: BigInteger): FieldExt {
@@ -97,13 +98,18 @@ sealed class FieldExt(
         if (this.Q != BLS12381.q) throw Exception("Invalid Q in qiPower")
         val i = i % this.extension
         if (i == 0) return this
-        return this.constructWithRoot(this.Q, this.elements.mapIndexed { index, element ->
-            if (index == 0) element.qiPower(i) else element.qiPower(i) * getFrob(
-                FrobIndex(
-                    this.extension, i, index
+        return this.constructWithRoot(
+            this.Q,
+            this.elements.mapIndexed { index, element ->
+                if (index == 0) element.qiPower(i) else element.qiPower(i) * getFrob(
+                    FrobIndex(
+                        this.extension,
+                        i,
+                        index
+                    )
                 )
-            )
-        })
+            }
+        )
     }
 
     override fun pow(exponent: BigInteger): Field {
@@ -124,7 +130,7 @@ sealed class FieldExt(
         if (other is FieldExt && other.extension == this.extension) {
             otherElements += other.elements
         } else {
-            if((other is Field && other.extension > this.extension) || other is BigInteger) throw InvalidOperandException()
+            if ((other is Field && other.extension > this.extension) || other is BigInteger) throw InvalidOperandException()
             otherElements += this.elements.map { this.basefield.zero(this.Q) }
             otherElements[0] = otherElements[0] + other
         }
@@ -137,8 +143,10 @@ sealed class FieldExt(
             is BigInteger -> {
                 return this.constructWithRoot(this.Q, this.elements.map { it * other })
             }
+
             is Field -> {
-                if (this.extension < other.extension) throw UnsupportedOperationException("Extension must be lower than operand")
+                if (this.extension < other.extension)
+                    throw UnsupportedOperationException("Extension must be lower than operand")
                 val newElements = this.elements.map { this.basefield.zero(this.Q) }.toMutableList()
                 for ((i, x) in this.elements.withIndex()) {
                     if (other is FieldExt && other.extension == this.extension) {
@@ -157,6 +165,7 @@ sealed class FieldExt(
                 }
                 return this.constructWithRoot(Q, newElements)
             }
+
             else -> throw InvalidOperandException()
         }
     }
@@ -180,26 +189,27 @@ sealed class FieldExt(
     }
 
     override fun equals(other: Any?): Boolean {
-        if(!(other is FieldExt && other.extension == this.extension)){
-            if(other is BigInteger || (other is FieldExt && this.extension > other.extension)){
-                for(i in this.elements.indices){
-                    if (this.elements[i] != this.root.zero(this.Q))
+        if (!(other is FieldExt && other.extension == this.extension)) {
+            if (other is BigInteger || (other is FieldExt && this.extension > other.extension)) {
+                for (i in this.elements.indices) {
+                    if (this.elements[i] != this.root.zero(this.Q)) {
                         return false
+                    }
                 }
                 return this.elements[0] == other
             }
             throw InvalidOperandException()
-        }else {
-            return this.elements.withIndex().all {(i, e) -> e == other.elements[i] } && this.Q == Q
+        } else {
+            return this.elements.withIndex().all { (i, e) -> e == other.elements[i] } && this.Q == Q
         }
     }
 
     override operator fun compareTo(other: Field): Int {
-        if(other !is FieldExt) throw InvalidOperandException()
-        for(i in this.elements.indices.reversed()){
+        if (other !is FieldExt) throw InvalidOperandException()
+        for (i in this.elements.indices.reversed()) {
             val a = this.elements[i]
             val b = other.elements[i]
-            if(a > b) return 1 else if (a < b) return -1
+            if (a > b) return 1 else if (a < b) return -1
         }
         return 0
     }
