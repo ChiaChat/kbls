@@ -35,7 +35,8 @@ class KHex(valueStr: String) {
     }
 
     override fun toString(): String {
-        return "${sign}0x$value"
+        val signStr = if(sign == Sign.NEGATIVE) "-" else ""
+        return "${signStr}0x$value"
     }
 
     companion object {

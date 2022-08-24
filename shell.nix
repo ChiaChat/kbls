@@ -3,11 +3,15 @@ with pkgs;
 mkShell {
   buildInputs = [
     jetbrains.idea-ultimate
+    jetbrains.webstorm
     jdk
     gradle
+    yarn
+    nodePackages.npm
+    nodejs
   ];
 
   shellHook = ''
-    idea-ultimate .
+    idea-ultimate . &  webstorm bls-signatures/ && fg
   '';
 }

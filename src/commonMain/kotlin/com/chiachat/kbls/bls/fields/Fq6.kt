@@ -20,10 +20,10 @@ class Fq6(
 
     override fun inverse(): Field {
         val (a, b, c) = this.elements.map { it as Fq2 }
-        val g0 = a * (a) - (b * (c.mulByNonResidue()))
+        val g0 = a * a - (b * (c.mulByNonResidue()))
         val g1 = ((c * c) as Fq2).mulByNonResidue() - (a * (b))
         val g2 = b * (b) - (a * (c))
-        val factor = g0 * (a) + (((g1 * (c) + (g2 * b)) as Fq2).mulByNonResidue()).inverse();
+        val factor = (g0 * a + ((g1 * c + g2 * b) as Fq2).mulByNonResidue()).inverse()
         return Fq6(
             this.Q,
             (g0 * factor) as Fq2,

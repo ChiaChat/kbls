@@ -5,6 +5,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 
 class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
+
     override val extension: Int = 1
     val value: BigInteger
 
@@ -25,7 +26,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
     override fun minus(other: Any): Fq {
         return when (other) {
-            is Fq -> Fq(Q, value + other.value)
+            is Fq -> Fq(Q, value + -other.value)
             else -> throw NotImplementedException()
         }
     }
@@ -86,13 +87,16 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         var a = Q
         var b = value
         while (a != ZERO) {
-            var q = b / a
+            val q = b / a
+            val tempB = b;
             b = a
-            a = b % a
+            a = tempB % a
+            val tempX0 = x0;
             x0 = x1
-            x1 = x0 - q * x1
+            x1 = tempX0 - q * x1
+            val tempY0 = y0
             y0 = y1
-            y1 = y0 - q * y1
+            y1 = tempY0 - q * y1
         }
         return Fq(Q, x0)
     }

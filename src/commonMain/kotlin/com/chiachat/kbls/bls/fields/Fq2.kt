@@ -16,15 +16,13 @@ class Fq2(
     override var root: Field = Fq(Q, N1)
 
     override fun inverse(): FieldExt {
-        val a = this.elements[0] as Fq
-        val b = this.elements[1] as Fq
+        val (a, b) = this.elements.map { it as Fq }
         val factor: Field = (a * a + b * b).inverse()
         return Fq2(Q, a * factor, -b * factor)
     }
 
     fun mulByNonResidue(): Fq2 {
-        val a = this.elements[0] as Fq
-        val b = this.elements[1] as Fq
+        val (a, b) = this.elements.map { it as Fq }
         return Fq2(Q, a - b, a + b)
     }
 

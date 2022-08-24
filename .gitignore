@@ -74,3 +74,4 @@ outTmp/
 /kotlin-native/dist
 kotlin-ide/
 .idea/
+bls-signatures/
