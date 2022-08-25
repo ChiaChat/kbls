@@ -19,7 +19,7 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    js(BOTH) {
+    js(IR) {
         browser {
             commonWebpackConfig {
                 cssSupport.enabled = true
@@ -38,7 +38,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies() {
-                implementation("com.soywiz.korlibs.krypto:krypto:3.0.0-Beta7")
+                implementation("com.soywiz.korlibs.krypto:krypto:3.0.0")
                 implementation("com.ionspin.kotlin:bignum:0.3.6")
             }
         }

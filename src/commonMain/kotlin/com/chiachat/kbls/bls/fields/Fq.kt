@@ -69,7 +69,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
             BigInteger.ZERO -> Fq(Q, ONE)
             BigInteger.ONE -> Fq(Q, value)
             else -> {
-                if (exponent % 2 == ZERO) {
+                if (exponent mod TWO == ZERO) {
                     Fq(Q, value * value) pow (exponent / 2)
                 } else {
                     (Fq(Q, value * value) pow (exponent / TWO)) * this
@@ -90,7 +90,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
             val q = b / a
             val tempB = b;
             b = a
-            a = tempB % a
+            a = tempB mod a
             val tempX0 = x0;
             x0 = x1
             x1 = tempX0 - q * x1
@@ -115,39 +115,39 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
             return Fq(Q, ZERO)
         }
         val exp = (Q - ONE) / BigInteger(2)
-        if (value.pow(exp) % Q != ONE) {
+        if (value.pow(exp) mod Q != ONE) {
             throw ValueException("No sqrt exists")
         }
-        if (Q % BigInteger(4) == BigInteger(3)) {
+        if (Q mod BigInteger(4) == BigInteger(3)) {
             val exp = (Q + ONE) / BigInteger(4)
-            return Fq(Q, value.pow(exp) % Q)
+            return Fq(Q, value.pow(exp) mod Q)
         }
-        if (Q % BigInteger(8) == BigInteger(5)) {
+        if (Q mod BigInteger(8) == BigInteger(5)) {
             val exp = (Q + BigInteger(3)) / BigInteger(8)
-            return Fq(Q, value.pow(exp) % Q)
+            return Fq(Q, value.pow(exp) mod Q)
         }
 
         var S = ZERO
         var q = Q - ONE
-        while (q % TWO == ZERO) {
+        while (q mod TWO == ZERO) {
             q /= TWO
             S += ONE
         }
 
         var z = ZERO
         for (i in ZERO..Q) {
-            var euler = i.pow((Q - ONE) / TWO) % Q
-            if (euler == BigInteger(-1) % Q) {
+            val euler = i.pow((Q - ONE) / TWO) mod Q
+            if (euler == BigInteger(-1) mod Q) {
                 z = i
+                break
             }
-            break
         }
 
         var M = S
 
-        var c = z.pow(q) % Q
-        var t = value.pow(q) % Q
-        var R = value.pow((q + ONE) / TWO) % Q
+        var c = z.pow(q) mod Q
+        var t = value.pow(q) mod Q
+        var R = value.pow((q + ONE) / TWO) mod Q
 
         while (true) {
             if (t == ZERO) return Fq(Q, ZERO)
@@ -155,16 +155,16 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
             var i = ZERO
             var f = t
             while (f != ONE) {
-                f = f.pow(TWO) % Q
+                f = f.pow(TWO) mod Q
                 i += ONE
             }
-            val exp1 = TWO.pow(M - i - ONE) % Q
-            var b = c.pow(exp1) % Q
+            val exp1 = TWO.pow(M - i - ONE) mod Q
+            var b = c.pow(exp1) mod Q
 
             M = i
-            c = b.pow(TWO) % Q
-            t = (t * c) % Q
-            R = (R * b) % Q
+            c = b.pow(TWO) mod Q
+            t = (t * c) mod Q
+            R = (R * b) mod Q
         }
     }
 
