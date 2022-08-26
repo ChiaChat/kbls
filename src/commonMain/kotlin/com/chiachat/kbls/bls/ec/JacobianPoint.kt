@@ -106,7 +106,7 @@ class JacobianPoint(
         return this.toAffine().unaryMinus().toJacobian()
     }
 
-    fun plus(value: JacobianPoint): JacobianPoint {
+    operator fun plus(value: JacobianPoint): JacobianPoint {
         if (this.isInfinity) return value
         else if (value.isInfinity) return this
         val U1 = this.x.times(value.z.pow(2.toBigInteger()))
@@ -131,9 +131,9 @@ class JacobianPoint(
         val X3 = R.times(R).minus(H_cu).minus(
             U1.times(H_sq).times(Fq(this.ec.q, 2.toBigInteger()))
         )
-        val Y3 = R.times(
-            U1.times(H_sq).minus(X3).minus(S1 * H_cu)
-        )
+        val Y3 = R
+            .times(U1.times(H_sq).minus(X3))
+            .minus(S1.times(H_cu))
         val Z3 = H.times(this.z).times(value.z)
         return JacobianPoint(
             X3,
@@ -148,8 +148,12 @@ class JacobianPoint(
         return scalarMultJacobian(value, this, this.ec)
     }
 
-    fun equals(value: JacobianPoint): Boolean {
-        return this.toAffine().equals(value.toAffine())
+    override fun equals(other: Any?): Boolean {
+        return when (other) {
+            is AffinePoint -> this.toAffine() == other
+            is JacobianPoint -> this.toAffine() == other.toAffine()
+            else -> return false
+        }
     }
 
 //    fun clone(): JacobianPoint {
@@ -202,7 +206,7 @@ class JacobianPoint(
             val x = (if (isExtension) Fq2.nil else Fq.nil).nil().fromBytes(ec.q, bytes)
             val yValue = yForX(x, ec)
             val sign = if (isExtension) signFq2(yValue as Fq2, ec) else signFq(yValue as Fq, ec)
-            val y = if(sign == signed) yValue else -yValue
+            val y = if (sign == signed) yValue else -yValue
             return AffinePoint(x, y, false, ec).toJacobian()
         }
 

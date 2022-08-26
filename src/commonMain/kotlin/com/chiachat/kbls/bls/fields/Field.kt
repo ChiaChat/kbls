@@ -46,4 +46,5 @@ sealed class Field {
 
     abstract override fun equals(other: Any?): Boolean
 
+    abstract fun isZero(): Boolean
 }

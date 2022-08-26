@@ -42,7 +42,8 @@ object EcUtil {
         if (point.isInfinity || value mod ec.q == ZERO) return result
         var addend = point
         while (value > ZERO) {
-            if (value.and(ONE) != ZERO) result = result.plus(addend)
+            if (value.and(ONE) != ZERO)
+                result = result.plus(addend)
             addend = addend.plus(addend)
             value = value.shr(1)
         }
@@ -55,6 +56,7 @@ object EcUtil {
         ec: EC = defaultEc
     ): JacobianPoint {
         return when (value) {
+            is Int -> scalarMultJacobian(value.toBigInteger(), point, ec)
             is BigInteger -> scalarMultJacobian(value, point, ec)
             is Fq -> scalarMultJacobian(value.value, point, ec)
             else -> throw NotImplementedException()

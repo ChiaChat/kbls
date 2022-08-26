@@ -1,10 +1,7 @@
 package com.chiachat.kbls.bls.ec
 
 import com.chiachat.kbls.bls.constants.BLS12381.defaultEc
-import com.chiachat.kbls.bls.fields.Field
-import com.chiachat.kbls.bls.fields.Fq
-import com.chiachat.kbls.bls.fields.Fq12
-import com.chiachat.kbls.bls.fields.Fq6
+import com.chiachat.kbls.bls.fields.*
 import com.chiachat.kbls.bls.util.EcUtil.scalarMultJacobian
 import com.chiachat.kbls.bls.util.TWO
 import com.ionspin.kotlin.bignum.integer.toBigInteger
@@ -14,14 +11,11 @@ class AffinePoint(
     val y: Field,
     val isInfinity: Boolean,
     val ec: EC = defaultEc
-
 ) {
+
     init {
         if (x.extension != y.extension) {
             throw Exception("Tried to construct an AffinePoint with different extensions for x & y")
-        }
-        if (listOf(x, y).any { it.extension > 2 }) {
-            throw Exception("Tried to use an extension higher than to create AffinePoint")
         }
     }
 
@@ -50,19 +44,20 @@ class AffinePoint(
         val f = Fq12.nil.one(this.ec.q)
         val wsq = Fq12(this.ec.q, f.root as Fq6, Fq6.nil.zero(this.ec.q) as Fq6)
         val wcu = Fq12(this.ec.q, Fq6.nil.zero(this.ec.q) as Fq6, f.root as Fq6)
-        return AffinePoint(this.x.times(wsq), this.y.times(wcu), false, this.ec)
+        return AffinePoint(this.x * wsq, this.y * wcu, false, this.ec)
     }
 
     fun untwist(): AffinePoint {
         val f = Fq12.nil.one(this.ec.q)
         val wsq = Fq12(this.ec.q, f.root as Fq6, Fq6.nil.zero(this.ec.q) as Fq6)
         val wcu = Fq12(this.ec.q, Fq6.nil.zero(this.ec.q) as Fq6, f.root as Fq6)
-        return AffinePoint(
-            this.x.div(wsq),
-            this.y.div(wcu),
+        val point = AffinePoint.fromFieldExt(
+            this.x.div(wsq) as FieldExt,
+            this.y.div(wcu) as FieldExt,
             false,
             this.ec
         )
+        return point
     }
 
     fun double(): AffinePoint {
@@ -114,12 +109,12 @@ class AffinePoint(
         )
     }
 
-    fun equals(value: AffinePoint): Boolean {
-        return (
-            this.x == value.x &&
-                this.y == value.y &&
-                this.isInfinity == value.isInfinity
-            )
+    override fun equals(other: Any?): Boolean {
+        return when (other) {
+            is AffinePoint -> this.x == other.x && this.y == other.y && this.isInfinity == other.isInfinity
+            is JacobianPoint -> equals(other.toAffine())
+            else -> false
+        }
     }
 
     fun clone(): AffinePoint {
@@ -133,5 +128,13 @@ class AffinePoint(
 
     override fun toString(): String {
         return "AffinePoint(x=${this.x}, y=${this.y}, i=${this.isInfinity})"
+    }
+
+    companion object {
+        fun fromFieldExt(x: FieldExt, y: FieldExt, isInfinity: Boolean, ec: EC = defaultEc): AffinePoint{
+            val newX = x.getExtensions(2).minByOrNull { it.isZero() } ?: throw Exception("Invalid x field")
+            val newY = y.getExtensions(2).minByOrNull { it.isZero() } ?: throw Exception("Invalid y field")
+            return AffinePoint(newX, newY, isInfinity, ec)
+        }
     }
 }

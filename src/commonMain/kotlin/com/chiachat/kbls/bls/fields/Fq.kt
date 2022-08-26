@@ -202,6 +202,8 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
     override fun nil(): Field = nil
 
+    override fun isZero(): Boolean  = this.value == ZERO
+
     companion object {
         val nil = Fq(ONE, ZERO)
     }
