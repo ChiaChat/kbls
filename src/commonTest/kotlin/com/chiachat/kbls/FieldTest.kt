@@ -2,6 +2,8 @@ package com.chiachat.kbls
 
 import com.chiachat.kbls.bls.constants.BLS12381.q
 import com.chiachat.kbls.bls.fields.*
+import com.chiachat.kbls.bls.util.ONE
+import com.chiachat.kbls.bls.util.TWO
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -144,12 +146,12 @@ class FieldTest {
     val b3 = Fq6(q, a3, a3, a3)
     val c3 = Fq12(q, b3, b3)
 
-//    @Test
-//    fun `FrobCoefficients`() {
-//        for (base in listOf(a3, b3, c3)) {
-//            for (expo in 1 until base.extension) {
-//                assertEquals(base.qiPower(expo), base.pow(q.pow(expo.toBigInteger())))
-//            }
-//        }
-//    }
+    @Test
+    fun `FrobCoefficients`() {
+        for (base in listOf(a3, b3, c3)) {
+            for (expo in 1 until base.extension) {
+                assertEquals(base.qiPower(expo), base.pow(q.pow(expo.toBigInteger())))
+            }
+        }
+    }
 }

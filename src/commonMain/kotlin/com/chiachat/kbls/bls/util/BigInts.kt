@@ -1,4 +1,4 @@
-package com.chiachat.kbls.bls.fields
+package com.chiachat.kbls.bls.util
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 

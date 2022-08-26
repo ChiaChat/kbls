@@ -32,6 +32,8 @@ sealed class Field {
 
     abstract operator fun div(other: Any): Field
 
+    abstract fun nil(): Field
+
     abstract fun zero(Q: BigInteger): Field
 
     abstract fun one(Q: BigInteger): Field

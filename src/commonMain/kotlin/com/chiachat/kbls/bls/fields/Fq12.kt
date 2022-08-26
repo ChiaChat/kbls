@@ -1,5 +1,6 @@
 package com.chiachat.kbls.bls.fields
 
+import com.chiachat.kbls.bls.util.ONE
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 class Fq12(override val Q: BigInteger, x: Fq6, y: Fq6) : FieldExt(listOf(x, y)) {
@@ -23,6 +24,8 @@ class Fq12(override val Q: BigInteger, x: Fq6, y: Fq6) : FieldExt(listOf(x, y)) 
             (b.unaryMinus().times(factor)) as Fq6
         )
     }
+
+    override fun nil(): Field = nil
 
     companion object {
         val nil = Fq12(ONE, Fq6.nil, Fq6.nil)

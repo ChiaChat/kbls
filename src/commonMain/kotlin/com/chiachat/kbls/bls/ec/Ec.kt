@@ -1,13 +1,14 @@
 package com.chiachat.kbls.bls.ec
 
+import com.chiachat.kbls.bls.fields.Field
 import com.chiachat.kbls.bls.fields.Fq
 import com.chiachat.kbls.bls.fields.Fq2
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
-data class EC(
+open class EC(
     val q: BigInteger,
-    val a: Fq,
-    val b: Fq,
+    val a: Field,
+    val b: Field,
     val gx: Fq,
     val gy: Fq,
     val g2x: Fq2,

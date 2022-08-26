@@ -1,5 +1,6 @@
 package com.chiachat.kbls.bls.fields
 
+import com.chiachat.kbls.bls.util.ONE
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 class Fq6(
@@ -36,6 +37,8 @@ class Fq6(
         val (a, b, c) = this.elements.map { it as Fq2 }
         return Fq6(this.Q, (c * this.root) as Fq2, a, b);
     }
+
+    override fun nil(): Field = nil
 
     companion object {
         val nil = Fq6(ONE, Fq2.nil, Fq2.nil, Fq2.nil)

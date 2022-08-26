@@ -1,5 +1,8 @@
 package com.chiachat.kbls.bls.fields
 
+import com.chiachat.kbls.bls.util.N1
+import com.chiachat.kbls.bls.util.ONE
+import com.chiachat.kbls.bls.util.TWO
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 class Fq2(
@@ -46,6 +49,8 @@ class Fq2(
         val x1 = a1 * ((Fq(this.Q, TWO) * x0).inverse())
         return Fq2(this.Q, x0, x1)
     }
+
+    override fun nil(): Field = nil
 
     companion object {
         val nil = Fq2(ONE, Fq.nil, Fq.nil)

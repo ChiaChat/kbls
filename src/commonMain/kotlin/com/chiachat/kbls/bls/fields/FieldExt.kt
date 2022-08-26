@@ -4,6 +4,9 @@ import com.chiachat.kbls.bech32.KHex
 import com.chiachat.kbls.bls.constants.BLS12381
 import com.chiachat.kbls.bls.constants.FrobIndex
 import com.chiachat.kbls.bls.constants.getFrob
+import com.chiachat.kbls.bls.util.N1
+import com.chiachat.kbls.bls.util.ONE
+import com.chiachat.kbls.bls.util.ZERO
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 // Fq6: FieldExt<Fq2>

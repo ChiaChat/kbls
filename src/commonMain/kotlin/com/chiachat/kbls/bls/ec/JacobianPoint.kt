@@ -1,263 +1,285 @@
 package com.chiachat.kbls.bls.ec
 
-import com.ionspin.kotlin.bignum.integer.BigInteger
-
+import com.chiachat.kbls.bech32.KHex
+import com.chiachat.kbls.bls.constants.BLS12381.defaultEc
+import com.chiachat.kbls.bls.constants.BLS12381.defaultEcTwist
+import com.chiachat.kbls.bls.fields.*
+import com.chiachat.kbls.bls.util.EcUtil.scalarMultJacobian
+import com.chiachat.kbls.bls.util.EcUtil.signFq
+import com.chiachat.kbls.bls.util.EcUtil.signFq2
+import com.chiachat.kbls.bls.util.EcUtil.yForX
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 
 class JacobianPoint(
-    val x: BigInteger,
-    val y: BigInteger,
-    val z: BigInteger,
+    val x: Field,
+    val y: Field,
+    val z: Field,
+    val isInfinity: Boolean,
+    val ec: EC = defaultEc
 ) {
-//     public static generateG1(): JacobianPoint
-//     {
-//         return new AffinePoint (
-//                 defaultEc.gx,
-//         defaultEc.gy,
-//         false,
-//         defaultEc
-//         ).toJacobian();
-//     }
-//
-//     public static generateG2(): JacobianPoint
-//     {
-//         return new AffinePoint (
-//                 defaultEcTwist.g2x,
-//         defaultEcTwist.g2y,
-//         false,
-//         defaultEcTwist
-//         ).toJacobian();
-//     }
-//
-//     public static infinityG1(isExtension: Boolean = false): JacobianPoint
-//     {
-//         const provider = isExtension ? Fq2 : Fq;
-//         return new JacobianPoint (
-//                 provider.nil.zero(defaultEc.q),
-//         provider.nil.zero(defaultEc.q),
-//         provider.nil.zero(defaultEc.q),
-//         true,
-//         defaultEc
-//         );
-//     }
-//
-//     public static infinityG2(isExtension: Boolean = true): JacobianPoint
-//     {
-//         const provider = isExtension ? Fq2 : Fq;
-//         return new JacobianPoint (
-//                 provider.nil.zero(defaultEcTwist.q),
-//         provider.nil.zero(defaultEcTwist.q),
-//         provider.nil.zero(defaultEcTwist.q),
-//         true,
-//         defaultEcTwist
-//         );
-//     }
-//
-//     public static fromBytesG1(
-//     bytes: UByteArray,
-//     isExtension: Boolean = false
-//     ): JacobianPoint
-//     {
-//         return JacobianPoint.fromBytes(bytes, isExtension, defaultEc);
-//     }
-//
-//     public static fromBytesG2(
-//     bytes: UByteArray,
-//     isExtension: Boolean = true
-//     ): JacobianPoint
-//     {
-//         return JacobianPoint.fromBytes(bytes, isExtension, defaultEcTwist);
-//     }
-//
-//     public static fromHexG1(
-//     hex: string,
-//     isExtension: Boolean = false
-//     ): JacobianPoint
-//     {
-//         return JacobianPoint.fromBytesG1(fromHex(hex), isExtension);
-//     }
-//
-//     public static fromHexG2(
-//     hex: string,
-//     isExtension: Boolean = true
-//     ): JacobianPoint
-//     {
-//         return JacobianPoint.fromBytesG2(fromHex(hex), isExtension);
-//     }
-//
-//     constructor(
-//         public x: Fq | Fq2,
-//     public y: Fq | Fq2,
-//     public z: Fq | Fq2,
-//     public isInfinity: Boolean,
-//     public ec: EC = defaultEc
-//     )
-//     {
-//         assert(x instanceof y.constructor);
-//         assert(y instanceof z.constructor);
-//     }
-//
-//     public isOnCurve(): Boolean
-//     {
-//         return this.isInfinity || this.toAffine().isOnCurve();
-//     }
-//
-//     public isValid(): Boolean
-//     {
-//         return (
-//                 this.isOnCurve() &&
-//                         this.multiply(this.ec.n).equals(JacobianPoint.infinityG2())
-//                 );
-//     }
-//
-//     public getFingerprint(): number
-//     {
-//         const bytes = this.toBytes();
-//         return bytesToInt(hash256(bytes).slice(0, 4), 'big');
-//     }
-//
-//     public toAffine(): AffinePoint
-//     {
-//         return this.isInfinity
-//         ? new AffinePoint (
-//             Fq.nil.zero(this.ec.q),
-//         Fq.nil.zero(this.ec.q),
-//         true,
-//         this.ec
-//         )
-//         : new AffinePoint (
-//             this.x.divide(this.z.pow(2 n)) as Fq | Fq2,
-//         this.y.divide(this.z.pow(3 n)) as Fq | Fq2,
-//         false,
-//         this.ec
-//         );
-//     }
-//
-//     public toBytes(): UByteArray
-//     {
-//         const point = this.toAffine();
-//         const output = point . x . toBytes ();
-//         if (point.isInfinity) {
-//             const bytes =[0xc0];
-//             for (let i = 0; i < output.length - 1; i++) bytes.push(0);
-//             return UByteArray.from(bytes);
-//         }
-//         const sign =
-//         point.y instanceof Fq2
-//         ? signFq2(point.y, this.ec)
-//         : signFq(point.y, this.ec);
-//         output[0] | = sign ? 0xa0 : 0x80;
-//         return output;
-//     }
-//
-//     public toHex(): string
-//     {
-//         return toHex(this.toBytes());
-//     }
-//
-//     public toString(): string
-//     {
-//         return `JacobianPoint(x=${this.x}, y=${this.y}, z=${this.z}, i=${this.isInfinity})`;
-//     }
-//
-//     public double(): JacobianPoint
-//     {
-//         if (this.isInfinity || this.y.equals(this.x.zero(this.ec.q)))
-//             return new JacobianPoint (
-//                     this.x.one(this.ec.q),
-//         this.x.one(this.ec.q),
-//         this.x.zero(this.ec.q),
-//         true,
-//         this.ec
-//         );
-//         const S = this.x
-//         .multiply(this.y)
-//         .multiply(this.y)
-//         .multiply(new Fq (this.ec.q, 4 n));
-//         const Z_sq = this.z.multiply(this.z);
-//         const Z_4th = Z_sq . multiply (Z_sq);
-//         const Y_sq = this.y.multiply(this.y);
-//         const Y_4th = Y_sq . multiply (Y_sq);
-//         const M = this.x
-//         .multiply(this.x)
-//         .multiply(new Fq (this.ec.q, 3 n))
-//         .add(this.ec.a.multiply(Z_4th));
-//         const X_p = M . multiply (M).subtract(S.multiply(new Fq (this.ec.q, 2 n)));
-//         const Y_p = M . multiply (S.subtract(X_p)).subtract(
-//             Y_4th.multiply(new Fq (this.ec.q, 8 n)
-//         )
-//         );
-//         const Z_p = this.y.multiply(this.z).multiply(new Fq (this.ec.q, 2 n));
-//         return new JacobianPoint (
-//                 X_p as Fq | Fq2,
-//         Y_p as Fq | Fq2,
-//         Z_p as Fq | Fq2,
-//         false,
-//         this.ec
-//         );
-//     }
-//
-//     public negate(): JacobianPoint
-//     {
-//         return this.toAffine().negate().toJacobian();
-//     }
-//
-//     public add(value : JacobianPoint): JacobianPoint
-//     {
-//         if (this.isInfinity) return value;
-//         else if (value.isInfinity) return this;
-//         const U1 = this.x.multiply(value.z.pow(2 n));
-//         const U2 = value . x . multiply (this.z.pow(2 n));
-//         const S1 = this.y.multiply(value.z.pow(3 n));
-//         const S2 = value . y . multiply (this.z.pow(3 n));
-//         if (U1.equals(U2)) {
-//             if (!S1.equals(S2)) {
-//                 return new JacobianPoint (
-//                         this.x.one(this.ec.q),
-//                 this.x.one(this.ec.q),
-//                 this.x.zero(this.ec.q),
-//                 true,
-//                 this.ec
-//                 );
-//             } else return this.double();
-//         }
-//         const H = U2 . subtract (U1);
-//         const R = S2 . subtract (S1);
-//         const H_sq = H . multiply (H);
-//         const H_cu = H . multiply (H_sq);
-//         const X3 = R . multiply (R)
-//             .subtract(H_cu)
-//             .subtract(U1.multiply(H_sq).multiply(new Fq (this.ec.q, 2 n)));
-//         const Y3 = R . multiply (U1.multiply(H_sq).subtract(X3)).subtract(
-//             S1.multiply(H_cu)
-//         );
-//         const Z3 = H . multiply (this.z).multiply(value.z);
-//         return new JacobianPoint (
-//                 X3 as Fq | Fq2,
-//         Y3 as Fq | Fq2,
-//         Z3 as Fq | Fq2,
-//         false,
-//         this.ec
-//         );
-//     }
-//
-//     public multiply(value : Fq | bigint): JacobianPoint
-//     {
-//         return scalarMultJacobian(value, this, this.ec);
-//     }
-//
-//     public equals(value : JacobianPoint): Boolean
-//     {
-//         return this.toAffine().equals(value.toAffine());
-//     }
-//
-//     public clone(): JacobianPoint
-//     {
-//         return new JacobianPoint (
-//                 this.x.clone(),
-//         this.y.clone(),
-//         this.z.clone(),
-//         this.isInfinity,
-//         this.ec
-//         );
-//     }
- }
+    init {
+        if (listOf(x, y, z).any { it.extension > 2 }) {
+            throw Exception("Invalid Jacobian Point")
+        }
+    }
+
+    fun isOnCurve(): Boolean {
+        return this.isInfinity || this.toAffine().isOnCurve()
+    }
+
+    fun isValid(): Boolean {
+        return this.isOnCurve() && this.times(this.ec.n) == infinityG2()
+    }
+
+//    fun getFingerprint(): Int {
+//        val bytes = this.toBytes()
+//        return bytesToInt(hash256(bytes).slice(0, 4), 'big')
+//    }
+
+    fun toAffine(): AffinePoint {
+        return if (this.isInfinity) AffinePoint(
+            Fq.nil.zero(this.ec.q),
+            Fq.nil.zero(this.ec.q),
+            true,
+            this.ec
+        )
+        else AffinePoint(
+            this.x.div(this.z.pow(2.toBigInteger())),
+            this.y.div(this.z.pow(3.toBigInteger())),
+            false,
+            this.ec
+        )
+    }
+
+    fun toBytes(): UByteArray {
+        val point = this.toAffine()
+        val output = point.x.toBytes()
+        if (point.isInfinity) {
+            val bytes: MutableList<UByte> = mutableListOf(0xc0.toUByte().toUByte())
+            for (i in output.indices) {
+                bytes.plus(0.toUByte())
+            }
+            return bytes.toUByteArray()
+        }
+        val sign = if (point.y is Fq2) signFq2(point.y, this.ec) else signFq(point.y as Fq, this.ec)
+        output[0] = if (sign) 0xa0.toUByte().toUByte() else 0x80.toUByte().toUByte()
+        return output
+    }
+
+    fun toHex(): KHex {
+        return KHex(this.toBytes())
+    }
+
+    override fun toString(): String {
+        return "JacobianPoint(x=${this.x}, y=${this.y}, z=${this.z}, i=${this.isInfinity})"
+    }
+
+    fun double(): JacobianPoint {
+        if (this.isInfinity || this.y.equals(this.x.zero(this.ec.q))) return JacobianPoint(
+            this.x.one(this.ec.q),
+            this.x.one(this.ec.q),
+            this.x.zero(this.ec.q),
+            true,
+            this.ec
+        )
+        val S = this.x.times(this.y).times(this.y).times(Fq(this.ec.q, 4.toBigInteger()))
+        val Z_sq = this.z.times(this.z)
+        val Z_4th = Z_sq.times(Z_sq)
+        val Y_sq = this.y.times(this.y)
+        val Y_4th = Y_sq.times(Y_sq)
+        val M = this.x.times(this.x).times(Fq(this.ec.q, 3.toBigInteger())).plus(this.ec.a.times(Z_4th))
+        val X_p = M.times(M).minus(S.times(Fq(this.ec.q, 2.toBigInteger())))
+        val Y_p = M.times(S.minus(X_p)).minus(
+            Y_4th.times(Fq(this.ec.q, 8.toBigInteger()))
+        )
+        val Z_p = this.y.times(this.z).times(Fq(this.ec.q, 2.toBigInteger()))
+        return JacobianPoint(
+            X_p,
+            Y_p,
+            Z_p,
+            false,
+            this.ec
+        )
+    }
+
+    fun unaryMinus(): JacobianPoint {
+        return this.toAffine().unaryMinus().toJacobian()
+    }
+
+    fun plus(value: JacobianPoint): JacobianPoint {
+        if (this.isInfinity) return value
+        else if (value.isInfinity) return this
+        val U1 = this.x.times(value.z.pow(2.toBigInteger()))
+        val U2 = value.x.times(this.z.pow(2.toBigInteger()))
+        val S1 = this.y.times(value.z.pow(3.toBigInteger()))
+        val S2 = value.y.times(this.z.pow(3.toBigInteger()))
+        if (U1.equals(U2)) {
+            if (!S1.equals(S2)) {
+                return JacobianPoint(
+                    this.x.one(this.ec.q),
+                    this.x.one(this.ec.q),
+                    this.x.zero(this.ec.q),
+                    true,
+                    this.ec
+                )
+            } else return this.double()
+        }
+        val H = U2.minus(U1)
+        val R = S2.minus(S1)
+        val H_sq = H.times(H)
+        val H_cu = H.times(H_sq)
+        val X3 = R.times(R).minus(H_cu).minus(
+            U1.times(H_sq).times(Fq(this.ec.q, 2.toBigInteger()))
+        )
+        val Y3 = R.times(
+            U1.times(H_sq).minus(X3).minus(S1 * H_cu)
+        )
+        val Z3 = H.times(this.z).times(value.z)
+        return JacobianPoint(
+            X3,
+            Y3,
+            Z3,
+            false,
+            this.ec
+        )
+    }
+
+    operator fun times(value: Any): JacobianPoint {
+        return scalarMultJacobian(value, this, this.ec)
+    }
+
+    fun equals(value: JacobianPoint): Boolean {
+        return this.toAffine().equals(value.toAffine())
+    }
+
+//    fun clone(): JacobianPoint {
+//        return JacobianPoint(
+//            this.x.clone(),
+//            this.y.clone(),
+//            this.z.clone(),
+//            this.isInfinity,
+//            this.ec
+//        )
+//    }
+
+    companion object {
+        fun fromBytes(
+            bytes: UByteArray,
+            isExtension: Boolean,
+            ec: EC = defaultEc
+        ): JacobianPoint {
+            val provider: Field = if (isExtension) Fq2.nil else Fq.nil
+            if (isExtension) {
+                if (bytes.size !== 96) throw Exception("Expected 96 bytes.")
+            } else {
+                if (bytes.size !== 48) throw Exception("Expected 48 bytes.")
+            }
+            val mByte = bytes[0].and(0xe0.toUByte())
+            if (listOf(
+                    0x20.toUByte(),
+                    0x60.toUByte(),
+                    0xe0.toUByte()
+                ).contains(mByte)
+            ) throw Exception("Invalid first three bits.")
+            val compressed = (mByte.and(0x80.toUByte())) != 0.toUByte()
+            val infinity = (mByte.and(0x40.toUByte())) != 0.toUByte()
+            val signed = (mByte.and(0x20.toUByte())) != 0.toUByte()
+            if (!compressed) throw Exception("Compression bit must be 1.")
+            bytes[0] = bytes[0].and(0x1f.toUByte())
+            if (infinity) {
+                for (byte in bytes) {
+                    if (byte != 0.toUByte()) throw Exception(
+                        "Point at infinity, but found non-zero byte."
+                    )
+                }
+                return AffinePoint(
+                    provider.nil().zero(ec.q),
+                    provider.nil().zero(ec.q),
+                    true,
+                    ec
+                ).toJacobian()
+            }
+            val x = (if (isExtension) Fq2.nil else Fq.nil).nil().fromBytes(ec.q, bytes)
+            val yValue = yForX(x, ec)
+            val sign = if (isExtension) signFq2(yValue as Fq2, ec) else signFq(yValue as Fq, ec)
+            val y = if(sign == signed) yValue else -yValue
+            return AffinePoint(x, y, false, ec).toJacobian()
+        }
+
+        fun fromHex(
+            hex: KHex,
+            isExtension: Boolean,
+            ec: EC = defaultEc
+        ): JacobianPoint {
+            return fromBytes(hex.byteArray, isExtension, ec)
+        }
+
+        fun generateG1(): JacobianPoint {
+            return AffinePoint(
+                defaultEc.gx,
+                defaultEc.gy,
+                false,
+                defaultEc
+            ).toJacobian()
+        }
+
+        fun generateG2(): JacobianPoint {
+            return AffinePoint(
+                defaultEcTwist.g2x,
+                defaultEcTwist.g2y,
+                false,
+                defaultEcTwist
+            ).toJacobian()
+        }
+
+        fun infinityG1(isExtension: Boolean = false): JacobianPoint {
+            val provider: Field = if (isExtension) Fq2.nil else Fq.nil
+            return JacobianPoint(
+                provider.nil().zero(defaultEc.q),
+                provider.nil().zero(defaultEc.q),
+                provider.nil().zero(defaultEc.q),
+                true,
+                defaultEc
+            )
+        }
+
+        fun infinityG2(isExtension: Boolean = true): JacobianPoint {
+            val provider = if (isExtension) Fq2.nil else Fq.nil
+            return JacobianPoint(
+                provider.nil().zero(defaultEcTwist.q),
+                provider.nil().zero(defaultEcTwist.q),
+                provider.nil().zero(defaultEcTwist.q),
+                true,
+                defaultEcTwist
+            )
+        }
+
+        fun fromBytesG1(
+            bytes: UByteArray,
+            isExtension: Boolean = false
+        ): JacobianPoint {
+            return JacobianPoint.fromBytes(bytes, isExtension, defaultEc)
+        }
+
+        fun fromBytesG2(
+            bytes: UByteArray,
+            isExtension: Boolean = true
+        ): JacobianPoint {
+            return JacobianPoint.fromBytes(bytes, isExtension, defaultEcTwist)
+        }
+
+        fun fromHexG1(
+            hex: KHex,
+            isExtension: Boolean = false
+        ): JacobianPoint {
+            return JacobianPoint.fromBytesG1(hex.byteArray, isExtension)
+        }
+
+        fun fromHexG2(
+            hex: KHex,
+            isExtension: Boolean = true
+        ): JacobianPoint {
+            return JacobianPoint.fromBytesG2(hex.byteArray, isExtension)
+        }
+    }
+}

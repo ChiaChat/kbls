@@ -1,6 +1,9 @@
 package com.chiachat.kbls.bls.fields
 
 import com.chiachat.kbls.bech32.KHex
+import com.chiachat.kbls.bls.util.ONE
+import com.chiachat.kbls.bls.util.TWO
+import com.chiachat.kbls.bls.util.ZERO
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 
@@ -88,10 +91,10 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         var b = value
         while (a != ZERO) {
             val q = b / a
-            val tempB = b;
+            val tempB = b
             b = a
             a = tempB mod a
-            val tempX0 = x0;
+            val tempX0 = x0
             x0 = x1
             x1 = tempX0 - q * x1
             val tempY0 = y0
@@ -196,6 +199,8 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
             return Fq(q, BigInteger.fromUByteArray(bytes, Sign.POSITIVE))
         }
     }
+
+    override fun nil(): Field = nil
 
     companion object {
         val nil = Fq(ONE, ZERO)
