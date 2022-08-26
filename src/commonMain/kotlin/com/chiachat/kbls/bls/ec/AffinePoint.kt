@@ -131,10 +131,18 @@ class AffinePoint(
     }
 
     companion object {
-        fun fromFieldExt(x: FieldExt, y: FieldExt, isInfinity: Boolean, ec: EC = defaultEc): AffinePoint{
-            val newX = x.getExtensions(2).minByOrNull { it.isZero() } ?: throw Exception("Invalid x field")
-            val newY = y.getExtensions(2).minByOrNull { it.isZero() } ?: throw Exception("Invalid y field")
-            return AffinePoint(newX, newY, isInfinity, ec)
+        fun fromFieldExt(x: Field, y: Field, isInfinity: Boolean, ec: EC = defaultEc): AffinePoint {
+            return when (x) {
+                is Fq -> AffinePoint(x, y, isInfinity, ec)
+                is Fq2 -> AffinePoint(x, y, isInfinity, ec)
+                is FieldExt -> {
+                    if (y is FieldExt) {
+                        val newX = x.getExtensions(2).minByOrNull { it.isZero() } ?: throw Exception("Invalid x field")
+                        val newY = y.getExtensions(2).minByOrNull { it.isZero() } ?: throw Exception("Invalid y field")
+                        AffinePoint(newX, newY, isInfinity, ec)
+                    } else throw Exception("Invalid y field")
+                }
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ class Fq2(
             return this.fromFq(this.Q, a0.modSqrt()) as Fq2
         }
 
-        var alpha = a0.pow(TWO) + (a1.pow(TWO))
+        var alpha = a0.pow(TWO) + a1.pow(TWO)
         var gamma = alpha.pow((this.Q - ONE) / TWO)
         if (Fq(this.Q, BigInteger(-1)) == gamma) {
             throw ValueException("No sqrt exists.")

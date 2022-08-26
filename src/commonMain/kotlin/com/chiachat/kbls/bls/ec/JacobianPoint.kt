@@ -17,12 +17,6 @@ class JacobianPoint(
     val isInfinity: Boolean,
     val ec: EC = defaultEc
 ) {
-    init {
-        if (listOf(x, y, z).any { it.extension > 2 }) {
-            throw Exception("Invalid Jacobian Point")
-        }
-    }
-
     fun isOnCurve(): Boolean {
         return this.isInfinity || this.toAffine().isOnCurve()
     }

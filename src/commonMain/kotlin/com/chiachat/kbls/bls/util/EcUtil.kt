@@ -15,7 +15,7 @@ import com.ionspin.kotlin.bignum.integer.toBigInteger
 object EcUtil {
 
     fun yForX(x: Field, ec: EC = defaultEc): Field {
-        val u = x.pow(3.toBigInteger()).plus(ec.a.times(x)).plus(ec.b)
+        val u = x.pow(3).plus(ec.a.times(x)).plus(ec.b)
         val y = when(u) {
             is Fq -> u.modSqrt()
             is Fq2 -> u.modSqrt()
@@ -23,7 +23,7 @@ object EcUtil {
         }
         if (y.equals(ZERO) || !AffinePoint(x, y, false, ec).isOnCurve())
         throw Exception("No y for point x.");
-        return y;
+        return y
     }
 
     fun scalarMultJacobian(

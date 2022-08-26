@@ -1,3 +1,5 @@
+import org.gradle.model.internal.core.ModelNodes.withType
+
 plugins {
     kotlin("multiplatform") version "1.7.10"
 }
@@ -53,5 +55,12 @@ kotlin {
         val jsTest by getting
         val nativeMain by getting
         val nativeTest by getting
+    }
+
+    tasks {
+        withType<Test>() {
+            minHeapSize = "512m"
+            maxHeapSize = "1024m"
+        }
     }
 }

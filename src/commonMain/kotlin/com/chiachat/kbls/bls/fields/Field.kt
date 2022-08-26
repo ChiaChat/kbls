@@ -2,6 +2,7 @@ package com.chiachat.kbls.bls.fields
 
 import com.chiachat.kbls.bech32.KHex
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 
 sealed class Field {
     abstract val Q: BigInteger
@@ -26,6 +27,8 @@ sealed class Field {
 
     abstract fun pow(exponent: BigInteger): Field
 
+    fun pow(exponent: Int): Field = pow(exponent.toBigInteger())
+
     abstract fun qiPower(i: Int): Field
 
     abstract fun inverse(): Field
@@ -36,7 +39,11 @@ sealed class Field {
 
     abstract fun zero(Q: BigInteger): Field
 
+    fun zero(Q: Int): Field = zero(Q.toBigInteger())
+
     abstract fun one(Q: BigInteger): Field
+
+    fun one(Q: Int): Field = one(Q.toBigInteger())
 
     abstract fun fromBytes(Q: BigInteger, bytes: UByteArray): Field
 

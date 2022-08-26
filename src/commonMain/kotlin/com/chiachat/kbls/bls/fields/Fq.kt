@@ -1,11 +1,13 @@
 package com.chiachat.kbls.bls.fields
 
 import com.chiachat.kbls.bech32.KHex
+import com.chiachat.kbls.bls.util.Math.modPow
 import com.chiachat.kbls.bls.util.ONE
 import com.chiachat.kbls.bls.util.TWO
 import com.chiachat.kbls.bls.util.ZERO
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 
 class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
@@ -68,17 +70,18 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     override fun toBool(): Boolean = true
 
     override infix fun pow(exponent: BigInteger): Fq {
-        return when (exponent) {
+        val result = when (exponent) {
             BigInteger.ZERO -> Fq(Q, ONE)
             BigInteger.ONE -> Fq(Q, value)
             else -> {
                 if (exponent mod TWO == ZERO) {
                     Fq(Q, value * value) pow (exponent / 2)
                 } else {
-                    (Fq(Q, value * value) pow (exponent / TWO)) * this
+                    (Fq(Q, value * value) pow (exponent / 2)) * this
                 }
             }
         }
+        return result
     }
 
     override fun qiPower(i: Int): Fq {
@@ -116,18 +119,18 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     fun modSqrt(): Fq {
         if (value == ZERO) {
             return Fq(Q, ZERO)
-        }
-        val exp = (Q - ONE) / BigInteger(2)
-        if (value.pow(exp) mod Q != ONE) {
+        } else if (modPow(value, this.Q.minus(ONE).div(TWO), this.Q) != ONE) {
             throw ValueException("No sqrt exists")
-        }
-        if (Q mod BigInteger(4) == BigInteger(3)) {
-            val exp = (Q + ONE) / BigInteger(4)
-            return Fq(Q, value.pow(exp) mod Q)
-        }
-        if (Q mod BigInteger(8) == BigInteger(5)) {
-            val exp = (Q + BigInteger(3)) / BigInteger(8)
-            return Fq(Q, value.pow(exp) mod Q)
+        } else if (this.Q.mod(4.toBigInteger()) === 3.toBigInteger()) {
+            return Fq(
+                this.Q,
+                modPow(this.value, (this.Q + ONE) / 4.toBigInteger(), this.Q)
+            )
+        } else if (this.Q.mod(8.toBigInteger()) === 5.toBigInteger()) {
+            return Fq(
+                this.Q,
+                modPow(this.value, (this.Q + 3.toBigInteger()) / 8.toBigInteger(), this.Q)
+            )
         }
 
         var S = ZERO
@@ -139,7 +142,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
         var z = ZERO
         for (i in ZERO..Q) {
-            val euler = i.pow((Q - ONE) / TWO) mod Q
+            val euler = modPow(i, this.Q.minus(ONE).div(TWO), this.Q)
             if (euler == BigInteger(-1) mod Q) {
                 z = i
                 break
@@ -148,9 +151,9 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
         var M = S
 
-        var c = z.pow(q) mod Q
-        var t = value.pow(q) mod Q
-        var R = value.pow((q + ONE) / TWO) mod Q
+        var c = modPow(z, q, this.Q)
+        var t = modPow(this.value, q, this.Q)
+        var R = modPow(this.value, q.plus(ONE).div(TWO), this.Q)
 
         while (true) {
             if (t == ZERO) return Fq(Q, ZERO)
@@ -161,8 +164,8 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
                 f = f.pow(TWO) mod Q
                 i += ONE
             }
-            val exp1 = TWO.pow(M - i - ONE) mod Q
-            var b = c.pow(exp1) mod Q
+
+            val b = modPow(c, modPow(TWO, M - i - ONE, this.Q), this.Q)
 
             M = i
             c = b.pow(TWO) mod Q
@@ -202,7 +205,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
 
     override fun nil(): Field = nil
 
-    override fun isZero(): Boolean  = this.value == ZERO
+    override fun isZero(): Boolean = this.value == ZERO
 
     companion object {
         val nil = Fq(ONE, ZERO)
