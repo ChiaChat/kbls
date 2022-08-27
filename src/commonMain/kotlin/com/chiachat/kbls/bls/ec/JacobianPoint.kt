@@ -8,7 +8,11 @@ import com.chiachat.kbls.bls.util.EcUtil.scalarMultJacobian
 import com.chiachat.kbls.bls.util.EcUtil.signFq
 import com.chiachat.kbls.bls.util.EcUtil.signFq2
 import com.chiachat.kbls.bls.util.EcUtil.yForX
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.soywiz.krypto.SHA256
+import com.soywiz.krypto.sha256
 
 class JacobianPoint(
     val x: Field,
@@ -25,10 +29,10 @@ class JacobianPoint(
         return this.isOnCurve() && this.times(this.ec.n) == infinityG2()
     }
 
-//    fun getFingerprint(): Int {
-//        val bytes = this.toBytes()
-//        return bytesToInt(hash256(bytes).slice(0, 4), 'big')
-//    }
+    fun getFingerprint(): BigInteger {
+        val hash = this.toBytes().toByteArray().sha256().bytes.toUByteArray()
+        return BigInteger.fromUByteArray(hash, Sign.POSITIVE)
+    }
 
     fun toAffine(): AffinePoint {
         return if (this.isInfinity) AffinePoint(
@@ -49,14 +53,14 @@ class JacobianPoint(
         val point = this.toAffine()
         val output = point.x.toBytes()
         if (point.isInfinity) {
-            val bytes: MutableList<UByte> = mutableListOf(0xc0.toUByte().toUByte())
+            val bytes: MutableList<UByte> = mutableListOf(0xc0.toUByte())
             for (i in output.indices) {
                 bytes.plus(0.toUByte())
             }
             return bytes.toUByteArray()
         }
         val sign = if (point.y is Fq2) signFq2(point.y, this.ec) else signFq(point.y as Fq, this.ec)
-        output[0] = if (sign) 0xa0.toUByte().toUByte() else 0x80.toUByte().toUByte()
+        output[0] = if (sign) 0xa0.toUByte() else 0x80.toUByte()
         return output
     }
 
@@ -96,7 +100,7 @@ class JacobianPoint(
         )
     }
 
-    fun unaryMinus(): JacobianPoint {
+    operator fun unaryMinus(): JacobianPoint {
         return this.toAffine().unaryMinus().toJacobian()
     }
 

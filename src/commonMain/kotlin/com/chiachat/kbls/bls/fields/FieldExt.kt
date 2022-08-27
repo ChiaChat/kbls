@@ -31,13 +31,13 @@ sealed class FieldExt(
 
     override fun fromBytes(Q: BigInteger, bytes: UByteArray): FieldExt {
         val length = this.extension * 48
-        if (bytes.size != 48) {
+        if (bytes.size != length) {
             throw Exception("Expected $length bytes")
         }
         val embeddedSize = 48 * (this.extension / this.elements.size)
         val elements: MutableList<UByteArray> = mutableListOf()
-        for (i in elements.indices) {
-            elements.add(bytes.slice(i * embeddedSize..(i + 1) * embeddedSize).toUByteArray())
+        for (i in this.elements.indices) {
+            elements.add(bytes.slice(i * embeddedSize until (i + 1) * embeddedSize).toUByteArray())
         }
         return construct(Q, elements.reversed().map { this.basefield.fromBytes(Q, it) })
     }

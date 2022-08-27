@@ -63,7 +63,9 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     }
 
     override fun toBytes(): UByteArray {
-        return value.toUByteArray()
+        val bytes = value.toUByteArray()
+        val res = UByteArray(48 - bytes.size).also { it.fill(0.toUByte()) } + bytes
+        return res
     }
 
     override fun toHex(): KHex = KHex(value)

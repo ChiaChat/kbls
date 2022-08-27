@@ -154,4 +154,11 @@ class FieldTest {
             }
         }
     }
+
+    @Test
+    fun ByteArrayConversion(){
+        assertEquals(a3, Fq2.nil.fromBytes(a3.Q, a3.toBytes()))
+        assertEquals(j, Fq6.nil.fromBytes(j.Q, j.toBytes()))
+    }
+
 }
