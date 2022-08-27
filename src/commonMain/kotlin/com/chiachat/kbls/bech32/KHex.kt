@@ -67,3 +67,4 @@ class KHex(valueStr: String) {
 }
 
 fun String.toHex(): KHex = KHex(this)
+fun String.toByte(): UByte = toHex().byteArray[0]
