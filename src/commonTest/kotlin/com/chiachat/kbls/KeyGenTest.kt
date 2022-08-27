@@ -6,25 +6,24 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KeyGenTest {
-    val seed =  ByteArray(32).also { it.fill(0x08) }
+    val seed = ByteArray(32).also { it.fill(0x08) }
 
     val puzzleHash = "4843c869bba5f65aa1e806cd372dae5668ca3b69640d067e86837ca96b324e71"
     val actualAddress = "xch1fppus6dm5hm94g0gqmxnwtdw2e5v5wmfvsxsvl5xsd72j6ejfecsdnkf2e"
 
     @Test
     fun genPk() {
-
     }
 
     @Test
-    fun bech32m(){
-        val hex  = KHex(puzzleHash).byteArray
+    fun bech32m() {
+        val hex = KHex(puzzleHash).byteArray
         val encoded: String = Bech32.encode(humanReadablePart = "xch", hex)
         assertEquals(encoded, actualAddress)
     }
 
     @Test
-    fun testEc(){
+    fun testEc() {
 //        val q = defaultEc.q
 //        val g = G1Generator()
 //

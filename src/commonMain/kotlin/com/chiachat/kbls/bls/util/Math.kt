@@ -9,8 +9,8 @@ object Math {
         if (exponent < 1) return ONE
         else if (base < 0 || base > modulo) base = base.mod(modulo)
         var result = ONE
-        while(exponent > 0){
-            if((exponent.and(ONE) > 0)) result = result.times(base).mod(modulo)
+        while (exponent > 0) {
+            if ((exponent.and(ONE) > 0)) result = result.times(base).mod(modulo)
             exponent = exponent.shr(1)
             base = base.times(base).mod(modulo)
         }

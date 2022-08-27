@@ -143,7 +143,10 @@ sealed class FieldExt(
 
     override operator fun times(other: Any): Field {
         when (other) {
-            is BigInteger -> { return this.constructWithRoot(this.Q, this.elements.map { it * other }) }
+            is BigInteger -> {
+                return this.constructWithRoot(this.Q, this.elements.map { it * other })
+            }
+
             is Field -> {
                 if (this.extension < other.extension) return other.times(this)
                 val newElements = this.elements.map { this.basefield.zero(this.Q) }.toMutableList()
@@ -164,6 +167,7 @@ sealed class FieldExt(
                 }
                 return this.constructWithRoot(Q, newElements)
             }
+
             else -> throw InvalidOperandException()
         }
     }
@@ -215,10 +219,11 @@ sealed class FieldExt(
     override fun toBool(): Boolean = this.elements.all { it.toBool() }
 
     fun getExtensions(extensionToGet: Int): List<Field> {
-        if(extensionToGet == extension) return listOf(this)
-        if(extensionToGet == 1 && extension == 2) return elements
+        if (extensionToGet == extension) return listOf(this)
+        if (extensionToGet == 1 && extension == 2) return elements
         return elements.flatMap { (it as FieldExt).getExtensions(extensionToGet) }
     }
+
     override fun isZero(): Boolean = elements.all { it.isZero() }
 }
 

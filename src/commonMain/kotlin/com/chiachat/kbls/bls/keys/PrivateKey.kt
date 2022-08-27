@@ -4,7 +4,6 @@ import com.chiachat.kbls.bech32.KHex
 import com.chiachat.kbls.bls.constants.BLS12381.defaultEc
 import com.chiachat.kbls.bls.ec.JacobianPoint
 import com.chiachat.kbls.bls.util.Hkdf.extractExpand
-import com.chiachat.kbls.bls.util.ZERO
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 const val SIZE = 32
@@ -46,7 +45,7 @@ class PrivateKey(val value: BigInteger) {
             return PrivateKey(KHex(okm).bigInt.mod(defaultEc.n))
         }
 
-        fun aggregate(privateKeys: List<PrivateKey>): PrivateKey{
+        fun aggregate(privateKeys: List<PrivateKey>): PrivateKey {
             val agg = privateKeys.map { it.value }.reduce { pks, pk -> pks + pk }.mod(defaultEc.n)
             return PrivateKey(agg)
         }

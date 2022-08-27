@@ -35,7 +35,7 @@ class KHex(valueStr: String) {
     }
 
     override fun toString(): String {
-        val signStr = if(sign == Sign.NEGATIVE) "-" else ""
+        val signStr = if (sign == Sign.NEGATIVE) "-" else ""
         return "${signStr}0x$value"
     }
 

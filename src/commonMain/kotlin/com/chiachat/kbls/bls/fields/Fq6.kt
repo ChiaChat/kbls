@@ -35,7 +35,7 @@ class Fq6(
 
     fun mulByNonResidue(): Fq6 {
         val (a, b, c) = this.elements.map { it as Fq2 }
-        return Fq6(this.Q, (c * this.root) as Fq2, a, b);
+        return Fq6(this.Q, (c * this.root) as Fq2, a, b)
     }
 
     override fun nil(): Field = nil

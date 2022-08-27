@@ -46,8 +46,8 @@ object Iso {
                 "171d6541fa38ccfaed6dea691f5fb614cb14b4e7f4e810aa22d6108f142b85757098e38d0f671c7188e2aaaaaaaa5ed1".toHex().bigInt
             ),
             Fq(q, ZERO)
-        ),
-    );
+        )
+    )
 
     val xden = arrayOf(
         Fq2(
@@ -66,8 +66,8 @@ object Iso {
                 "1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaa9f".toHex().bigInt
             )
         ),
-        Fq2(q, Fq(q, ONE), Fq(q, ZERO)),
-    );
+        Fq2(q, Fq(q, ONE), Fq(q, ZERO))
+    )
 
     val ynum = arrayOf(
         Fq2(
@@ -107,8 +107,8 @@ object Iso {
                 "124c9ad43b6cf79bfbf7043de3811ad0761b0f37a1e26286b0e977c69aa274524e79097a56dc4bd9e1b371c71c718b10".toHex().bigInt
             ),
             Fq(q, ZERO)
-        ),
-    );
+        )
+    )
 
     val yden = arrayOf(
         Fq2(
@@ -138,7 +138,6 @@ object Iso {
                 "1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaa99".toHex().bigInt
             )
         ),
-        Fq2(q, Fq(q, ONE), Fq(q, ZERO)),
-    );
-
+        Fq2(q, Fq(q, ONE), Fq(q, ZERO))
+    )
 }

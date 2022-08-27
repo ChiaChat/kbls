@@ -1,5 +1,5 @@
-import org.chiachat.kbls.crypto.bech32.AddressFormatException
 import com.chiachat.kbls.crypto.bech32.Bech32Data
+import org.chiachat.kbls.crypto.bech32.AddressFormatException
 
 /**
  * Bech32 Kotlin implementation.
@@ -224,10 +224,12 @@ object Bech32 {
     fun decode(str: String): Bech32Data {
         var lower = false
         var upper = false
-        if (str.length < 8)
+        if (str.length < 8) {
             throw AddressFormatException.InvalidDataLength("Input too short: " + str.length)
-        if (str.length > 90)
+        }
+        if (str.length > 90) {
             throw AddressFormatException.InvalidDataLength("Input too long: " + str.length)
+        }
         for (i in 0 until str.length) {
             val c = str[i]
             if (c.toInt() < 33 || c.toInt() > 126) throw AddressFormatException.InvalidCharacter(
@@ -235,13 +237,15 @@ object Bech32 {
                 i
             )
             if (c in 'a'..'z') {
-                if (upper)
+                if (upper) {
                     throw AddressFormatException.InvalidCharacter(c, i)
+                }
                 lower = true
             }
             if (c in 'A'..'Z') {
-                if (lower)
+                if (lower) {
                     throw AddressFormatException.InvalidCharacter(c, i)
+                }
                 upper = true
             }
         }

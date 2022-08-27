@@ -17,8 +17,8 @@ data class HkdfTestCase(
 
 class HkdfTest {
     @Test
-    fun extractExpand(){
-        for(test in tests){
+    fun extractExpand() {
+        for (test in tests) {
             val salt = test.salt.toHex().byteArray
             val ikm = test.ikm.toHex().byteArray
             val info = test.info.toHex().byteArray
@@ -66,8 +66,5 @@ val tests = listOf(
         prkExpected = "eb01c9cd916653df76ffa61b6ab8a74e254ebfd9bfc43e624cc12a72b0373dee",
         okmExpected = "8faabea85fc0c64e7ca86217cdc6dcdc88551c3244d56719e630a3521063082c46455c2fd5483811f9520a748f0099c1dfcfa52c54e1c22b5cdf70efb0f3c676",
         length = 64
-    ),
+    )
 )
-
-
-

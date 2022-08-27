@@ -2,8 +2,10 @@ package com.chiachat.kbls.bls.constants
 
 import com.chiachat.kbls.bech32.KHex
 import com.chiachat.kbls.bls.constants.BLS12381.q
-import com.chiachat.kbls.bls.fields.*
 import com.chiachat.kbls.bls.fields.Field
+import com.chiachat.kbls.bls.fields.Fq
+import com.chiachat.kbls.bls.fields.Fq2
+import com.chiachat.kbls.bls.fields.Fq6
 import com.chiachat.kbls.bls.util.N1
 
 data class FrobIndex(

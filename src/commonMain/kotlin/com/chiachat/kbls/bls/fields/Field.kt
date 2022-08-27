@@ -8,7 +8,6 @@ sealed class Field {
     abstract val Q: BigInteger
     abstract val extension: Int
 
-
     abstract operator fun unaryMinus(): Field
 
     abstract operator fun plus(other: Any): Field

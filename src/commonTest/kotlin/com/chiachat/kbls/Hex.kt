@@ -1,8 +1,6 @@
 package com.chiachat.kbls
 
 import com.chiachat.kbls.bech32.toHex
-import com.chiachat.kbls.bls.fields.Fq
-import com.chiachat.kbls.bls.fields.Fq2
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -13,8 +11,6 @@ class Hex {
     val b = "16AFCDF"
     val c = "21AF"
     val cArr = listOf(33, 175).map { it.toUByte() }.toUByteArray()
-
-
 
     @Test
     fun fromHex() {

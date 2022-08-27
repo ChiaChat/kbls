@@ -1,7 +1,10 @@
 package com.chiachat.kbls
 
 import com.chiachat.kbls.bls.constants.BLS12381.q
-import com.chiachat.kbls.bls.fields.*
+import com.chiachat.kbls.bls.fields.Fq
+import com.chiachat.kbls.bls.fields.Fq12
+import com.chiachat.kbls.bls.fields.Fq2
+import com.chiachat.kbls.bls.fields.Fq6
 import com.chiachat.kbls.bls.util.ONE
 import com.chiachat.kbls.bls.util.TWO
 import com.ionspin.kotlin.bignum.integer.toBigInteger
@@ -25,11 +28,12 @@ class FieldTest {
     val eQ = 17.toBigInteger()
     val expectedE = Fq2(
         eQ,
-        Fq(eQ, 10.toBigInteger()), Fq(eQ, 11.toBigInteger())
+        Fq(eQ, 10.toBigInteger()),
+        Fq(eQ, 11.toBigInteger())
     )
 
     @Test
-    fun testMultiplication(){
+    fun testMultiplication() {
         assertEquals(expectedE, e)
     }
 
@@ -156,9 +160,8 @@ class FieldTest {
     }
 
     @Test
-    fun ByteArrayConversion(){
+    fun ByteArrayConversion() {
         assertEquals(a3, Fq2.nil.fromBytes(a3.Q, a3.toBytes()))
         assertEquals(j, Fq6.nil.fromBytes(j.Q, j.toBytes()))
     }
-
 }

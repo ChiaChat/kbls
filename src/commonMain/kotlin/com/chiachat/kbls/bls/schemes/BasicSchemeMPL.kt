@@ -11,38 +11,40 @@ import com.chiachat.kbls.bls.util.Signing.coreSignMpl
 import com.chiachat.kbls.bls.util.Signing.coreVerifyMpl
 
 class BasicSchemeMPL {
-        fun  keyGen(seed: UByteArray): PrivateKey = HDKeys.keyGen(seed)
+    fun keyGen(seed: UByteArray): PrivateKey = HDKeys.keyGen(seed)
 
-    fun  sign(
+    fun sign(
         privateKey: PrivateKey,
         message: UByteArray
     ): JacobianPoint {
-        return coreSignMpl(privateKey, message, basicSchemeDst);
+        return coreSignMpl(privateKey, message, basicSchemeDst)
     }
 
-    fun  verify(
+    fun verify(
         publicKey: JacobianPoint,
         message: UByteArray,
         signature: JacobianPoint
     ): Boolean {
-        return coreVerifyMpl(publicKey, message, signature, basicSchemeDst);
+        return coreVerifyMpl(publicKey, message, signature, basicSchemeDst)
     }
 
-    fun  aggregate(signatures: List<JacobianPoint>): JacobianPoint {
+    fun aggregate(signatures: List<JacobianPoint>): JacobianPoint {
         return coreAggregateMpl(signatures)
     }
 
-    fun  aggregateVerify(
+    fun aggregateVerify(
         publicKeys: List<JacobianPoint>,
         messages: List<UByteArray>,
         signature: JacobianPoint
     ): Boolean {
-        if (publicKeys.size !== messages.size || publicKeys.isEmpty())
-            return false;
+        if (publicKeys.size !== messages.size || publicKeys.isEmpty()) {
+            return false
+        }
         for (message in messages) {
             for (match in messages) {
-                if (message != match && message.contentEquals(match))
-                    return false;
+                if (message != match && message.contentEquals(match)) {
+                    return false
+                }
             }
         }
         return coreAggregateVerify(
@@ -50,27 +52,27 @@ class BasicSchemeMPL {
             messages,
             signature,
             basicSchemeDst
-        );
+        )
     }
 
-    fun  deriveChildSk(
+    fun deriveChildSk(
         privateKey: PrivateKey,
         index: Int
     ): PrivateKey {
-        return deriveChildSk(privateKey, index);
+        return deriveChildSk(privateKey, index)
     }
 
-    fun  deriveChildSkUnhardened(
+    fun deriveChildSkUnhardened(
         privateKey: PrivateKey,
         index: Int
     ): PrivateKey {
-        return deriveChildSkUnhardened(privateKey, index);
+        return deriveChildSkUnhardened(privateKey, index)
     }
 
-    fun  deriveChildPkUnhardened(
+    fun deriveChildPkUnhardened(
         publicKey: JacobianPoint,
         index: Int
     ): JacobianPoint {
-        return deriveChildG1Unhardened(publicKey, index);
+        return deriveChildG1Unhardened(publicKey, index)
     }
 }

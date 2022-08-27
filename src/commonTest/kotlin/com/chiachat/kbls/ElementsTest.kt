@@ -2,7 +2,6 @@ package com.chiachat.kbls
 
 import com.chiachat.kbls.bls.ec.JacobianPoint
 import com.chiachat.kbls.bls.util.byteListToBigInteger
-import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -10,8 +9,8 @@ import kotlin.test.assertNotEquals
 class ElementsTest {
     val i1 = byteListToBigInteger(1, 2)
     val i2 = byteListToBigInteger(3, 1, 4, 1, 5, 9)
-    val b1 = i1;
-    val b2 = i2;
+    val b1 = i1
+    val b2 = i2
     val g1 = JacobianPoint.generateG1()
     val g2 = JacobianPoint.generateG2()
     val u1 = JacobianPoint.infinityG1()
@@ -22,7 +21,7 @@ class ElementsTest {
     val y2 = g2.times(b2)
 
     @Test
-    fun G1MultiplicationEquality(){
+    fun G1MultiplicationEquality() {
         assertNotEquals(x1, x2)
         assertEquals(x1.times(b1), x1.times(b1))
         assertNotEquals(x1.times(b2), x1.times(b1))
@@ -32,7 +31,7 @@ class ElementsTest {
     val right = x1
 
     @Test
-    fun G1AdditionEquality(){
+    fun G1AdditionEquality() {
         assertEquals(left, right)
         assertEquals(x1.plus(x2), x2.plus(x1))
         assertEquals(x1.plus(-x1), u1)

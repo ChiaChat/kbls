@@ -14,7 +14,7 @@ class Fq12(override val Q: BigInteger, x: Fq6, y: Fq6) : FieldExt(listOf(x, y)) 
     }
 
     override fun inverse(): Field {
-        val (a, b) = this.elements.map { it as Fq6 };
+        val (a, b) = this.elements.map { it as Fq6 }
         val factor = (a * a)
             .minus(((b * b) as Fq6).mulByNonResidue())
             .inverse()

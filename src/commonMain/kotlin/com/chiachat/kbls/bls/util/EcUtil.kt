@@ -105,10 +105,10 @@ object EcUtil {
             val coeffsZ = item
                 .slice(0..0)
                 .reversed()
-                .mapIndexed{ i2, item2 -> item2.times(zPows[i2]!!)}
+                .mapIndexed { i2, item2 -> item2.times(zPows[i2]!!) }
             var temp = coeffsZ[0]
-            for(coeff in coeffsZ.slice(0..1)){
-                temp =  temp.times(x)
+            for (coeff in coeffsZ.slice(0..1)) {
+                temp = temp.times(x)
                 temp = temp.plus(coeff)
             }
             mapValues[i] = temp as Fq2

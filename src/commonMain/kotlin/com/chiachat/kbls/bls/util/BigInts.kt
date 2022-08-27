@@ -11,16 +11,17 @@ val ZERO = BigInteger.ZERO
 val ONE = BigInteger.ONE
 val TWO = BigInteger.TWO
 
-fun byteListToBigInteger(vararg bytes: Int): BigInteger{
+fun byteListToBigInteger(vararg bytes: Int): BigInteger {
     return BigInteger.fromUByteArray(bytes.map { it.toUByte() }.toUByteArray(), Sign.POSITIVE)
 }
 
-fun Int.toBytes(size: Int, type: String = "big"): UByteArray{
-    return when(type){
+fun Int.toBytes(size: Int, type: String = "big"): UByteArray {
+    return when (type) {
         "big" -> {
             val bytes = this.toBigInteger().toUByteArray()
             UByteArray(4 - bytes.size).also { it.fill(0.toUByte()) } + bytes
         }
+
         else -> throw NotImplementedException()
     }
 }

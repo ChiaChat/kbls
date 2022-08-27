@@ -74,19 +74,19 @@ class EllipticCurveTest {
     val g2_j2 = JacobianPoint.generateG2().times(2)
 
     @Test
-    fun Conversions(){
+    fun Conversions() {
         assertEquals(g, g.toAffine().toJacobian())
         assertEquals(g.toAffine().times(2), g_j.times(2).toAffine())
         assertEquals(g2.toAffine().times(3), g2_j.plus(g2_j2).toAffine())
     }
 
     @Test
-    fun SignFq2(){
+    fun SignFq2() {
         val a = Fq(q, BigInteger(62323))
         val testcase1 = Fq2(q, a, Fq(q, ZERO))
         val testcase2 = Fq2(q, -a, Fq(q, ZERO))
         assertNotEquals(signFq2(testcase1), signFq2(testcase2))
-        val testcase3 = Fq2(q,Fq(q, ZERO), a)
+        val testcase3 = Fq2(q, Fq(q, ZERO), a)
         val testcase4 = Fq2(q, Fq(q, ZERO), -a)
         assertNotEquals(signFq2(testcase3), signFq2(testcase4))
     }

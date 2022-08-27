@@ -85,15 +85,15 @@ object OpSwuG2 {
 
     fun optSwu2Map(t: Fq2, t2: Fq2?): JacobianPoint {
         var Pp = iso3(osswu2Help(t))
-        if(t2 != null){
+        if (t2 != null) {
             val Pp2 = iso3(osswu2Help(t2))
             Pp = Pp.plus(Pp2)
         }
         return Pp.times(hEff)
     }
 
-    fun g2Map(alpha: UByteArray, dst: UByteArray): JacobianPoint{
-        val elements = Hp2(alpha, 2,dst).map { hh ->
+    fun g2Map(alpha: UByteArray, dst: UByteArray): JacobianPoint {
+        val elements = Hp2(alpha, 2, dst).map { hh ->
             val items = hh.map { Fq(q, it) }
             Fq2(q, items[0], items[1])
         }
