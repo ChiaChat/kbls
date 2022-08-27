@@ -8,7 +8,8 @@ class AugSchemeMPL {
         fun keyGen(seed: UByteArray): PrivateKey = HDKeys.keyGen(seed)
 
         fun sign(privateKey: PrivateKey, message: UByteArray){
-
+            val publicKey = privateKey.getG1()
+            return coreSignMpl()
         }
     }
 }

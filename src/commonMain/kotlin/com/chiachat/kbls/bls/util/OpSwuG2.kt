@@ -16,6 +16,7 @@ import com.chiachat.kbls.bls.ec.JacobianPoint
 import com.chiachat.kbls.bls.fields.Fq
 import com.chiachat.kbls.bls.fields.Fq2
 import com.chiachat.kbls.bls.util.EcUtil.evalIso
+import com.chiachat.kbls.bls.util.HashToField.Hp2
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
 object OpSwuG2 {
@@ -91,7 +92,11 @@ object OpSwuG2 {
         return Pp.times(hEff)
     }
 
-    fun g2Map(alpha: UByteArray, dst: UByteArray){
-        val elements = Hp2()
+    fun g2Map(alpha: UByteArray, dst: UByteArray): JacobianPoint{
+        val elements = Hp2(alpha, 2,dst).map { hh ->
+            val items = hh.map { Fq(q, it) }
+            Fq2(q, items[0], items[1])
+        }
+        return optSwu2Map(elements[0], elements[1])
     }
 }
