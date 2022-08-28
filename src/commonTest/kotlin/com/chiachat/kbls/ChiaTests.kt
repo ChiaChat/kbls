@@ -2,7 +2,9 @@ package com.chiachat.kbls
 
 import com.chiachat.kbls.bech32.toHex
 import com.chiachat.kbls.bls.schemes.BasicSchemeMPL
+import com.chiachat.kbls.bls.schemes.PopSchemeMPL
 import com.chiachat.kbls.bls.util.toUByteArray
+import com.chiachat.kbls.bls.util.uByteArrayOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -83,5 +85,15 @@ class ChiaTests {
     }
 
     @Test
-    fun
+    fun PopSchemeTest(){
+        val seed1 = uByteArrayOf(32, 4)
+        val sk1 = PopSchemeMPL.keyGen(seed1)
+        val proof = PopSchemeMPL.popProve(sk1)
+        assertEquals(
+            "84f709159435f0dc73b3e8bf6c78d85282d19231555a8ee3b6e2573aaf66872d9203fefa1ef700e34e7c3f3fb28210100558c6871c53f1ef6055b9f06b0d1abe22ad584ad3b957f3018a8f58227c6c716b1e15791459850f2289168fa0cf9115".toHex(),
+            proof.toHex()
+        )
+    }
+
+
 }

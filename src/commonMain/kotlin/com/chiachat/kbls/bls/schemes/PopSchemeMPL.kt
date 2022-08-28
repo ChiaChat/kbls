@@ -6,6 +6,7 @@ import com.chiachat.kbls.bls.constants.Schemes.popSchemePopDst
 import com.chiachat.kbls.bls.ec.JacobianPoint
 import com.chiachat.kbls.bls.fields.Fq12
 import com.chiachat.kbls.bls.keys.PrivateKey
+import com.chiachat.kbls.bls.util.HDKeys
 import com.chiachat.kbls.bls.util.HDKeys.deriveChildG1Unhardened
 import com.chiachat.kbls.bls.util.OpSwuG2.g2Map
 import com.chiachat.kbls.bls.util.Pairing.atePairingMulti
@@ -16,7 +17,7 @@ import com.chiachat.kbls.bls.util.Signing.coreVerifyMpl
 
 object PopSchemeMPL {
     fun keyGen(seed: UByteArray): PrivateKey {
-        return keyGen(seed)
+        return HDKeys.keyGen(seed)
     }
 
     fun sign(
