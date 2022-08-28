@@ -19,7 +19,7 @@ class KHex(valueStr: String) {
             inputValue.drop(2)
         } else inputValue
         inputValue = if (inputValue.length % 2 == 0) inputValue else "0$inputValue"
-        value = inputValue
+        value = inputValue.uppercase()
     }
 
     val byteArray: UByteArray by lazy {
@@ -37,6 +37,16 @@ class KHex(valueStr: String) {
     override fun toString(): String {
         val signStr = if (sign == Sign.NEGATIVE) "-" else ""
         return "${signStr}0x$value"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return when(other) {
+            is KHex -> this.value == other.value
+            is BigInteger -> this == KHex(other)
+            is UByteArray -> this == KHex(other)
+            is ByteArray -> this == KHex(other.toUByteArray())
+            else -> false
+        }
     }
 
     companion object {
@@ -66,5 +76,6 @@ class KHex(valueStr: String) {
     }
 }
 
+fun BigInteger.toHex(): KHex = KHex(this)
 fun String.toHex(): KHex = KHex(this)
 fun String.toByte(): UByte = toHex().byteArray[0]

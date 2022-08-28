@@ -8,19 +8,20 @@ import com.ionspin.kotlin.bignum.integer.toBigInteger
 
 object HashToField {
     fun I2OSP(value: BigInteger, length: Int): UByteArray {
-        if (value < 0.toBigInteger() || value >= 1.toBigInteger()
-            .shl(8 * length)
-        ) throw Exception("Bad I2OSP call: value=$value, length=$length.")
+        if (value < 0.toBigInteger() || value >= (1.toBigInteger().shl(8 * length)))
+            throw Exception("Bad I2OSP call: value=$value, length=$length.")
         val bytes: MutableList<Int> = mutableListOf()
         for (i in 0 until length) bytes.add(0)
         var tempValue = value
-        for (i in length - 1..0) {
+        for (i in (0 until length).reversed()) {
             bytes[i] = tempValue.and("0xff".toHex().bigInt).intValue(true)
             tempValue = tempValue.shr(8)
         }
         val result = bytes.map { it.toUByte() }.toUByteArray()
         val bytesTemp = value.toUByteArray()
-        val toBytesValue = UByteArray(length - bytesTemp.size) + bytesTemp.reversedArray()
+        val toBytesValue = UByteArray(length - bytesTemp.size) + bytesTemp
+        if(!toBytesValue.contentEquals(result))
+            throw Exception("Unexpected result")
         return result
     }
 
@@ -47,7 +48,7 @@ object HashToField {
         if (ell > 255) throw Exception("Bad expandMessageXmd call: ell=$ell out of range.")
         val dst_prime = dst + I2OSP(BigInteger(dst.size), 1)
         val Z_pad = I2OSP(0.toBigInteger(), hash.blockSize)
-        val lib_str = I2OSP(BigInteger(length), 2)
+        val lib_str = I2OSP(length.toBigInteger(), 2)
         val b_0 = hash.convert(
             Z_pad + message + lib_str + I2OSP(0.toBigInteger(), 1) + dst_prime
         )
@@ -98,7 +99,7 @@ object HashToField {
             for (j in 0 until degree) {
                 val elmOffset = byteLength * (j + i * degree)
                 val tv = pseudoRandomBytes.slice(
-                    elmOffset..elmOffset + byteLength
+                    elmOffset until elmOffset + byteLength
                 ).toUByteArray()
                 eValues.add(OS2IP(tv).mod(modulus))
             }

@@ -25,18 +25,14 @@ object Signing {
         if (!signature.isValid() || !pk.isValid()) return false
         val q = g2Map(message, dst)
         val one = Fq12.nil.one(defaultEc.q)
-        val pairingResult = atePairingMulti(
-            listOf(pk, JacobianPoint.generateG1().unaryMinus()),
-            listOf(q, signature)
-        )
+        val pairingResult = atePairingMulti( listOf(pk, JacobianPoint.generateG1().unaryMinus()), listOf(q, signature) )
         return pairingResult == one
     }
-
     fun coreAggregateMpl(signatures: List<JacobianPoint>): JacobianPoint {
         if (signatures.size == 0) throw Exception("Must aggregate at least 1 signature.")
         var aggregate = signatures[0]
         if (!aggregate.isValid()) throw Exception("Aggregate is not valid")
-        for (signature in signatures.slice(0..1)) {
+        for (signature in signatures.slice(1 until signatures.size)) {
             if (!signature.isValid()) throw Exception("Signature is not valid")
             aggregate = aggregate.plus(signature)
         }

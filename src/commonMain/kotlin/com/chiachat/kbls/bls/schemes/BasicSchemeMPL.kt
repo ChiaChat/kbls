@@ -10,7 +10,7 @@ import com.chiachat.kbls.bls.util.Signing.coreAggregateVerify
 import com.chiachat.kbls.bls.util.Signing.coreSignMpl
 import com.chiachat.kbls.bls.util.Signing.coreVerifyMpl
 
-class BasicSchemeMPL {
+object BasicSchemeMPL {
     fun keyGen(seed: UByteArray): PrivateKey = HDKeys.keyGen(seed)
 
     fun sign(

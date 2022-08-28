@@ -61,7 +61,7 @@ class JacobianPoint(
             return bytes.toUByteArray()
         }
         val sign = if (point.y is Fq2) signFq2(point.y, this.ec) else signFq(point.y as Fq, this.ec)
-        output[0] = if (sign) 0xa0.toUByte() else 0x80.toUByte()
+        output[0] = output[0].xor(if (sign) 0xa0.toUByte() else 0x80.toUByte())
         return output
     }
 
@@ -173,16 +173,16 @@ class JacobianPoint(
         ): JacobianPoint {
             val provider: Field = if (isExtension) Fq2.nil else Fq.nil
             if (isExtension) {
-                if (bytes.size !== 96) throw Exception("Expected 96 bytes.")
+                if (bytes.size != 96) throw Exception("Expected 96 bytes.")
             } else {
-                if (bytes.size !== 48) throw Exception("Expected 48 bytes.")
+                if (bytes.size != 48) throw Exception("Expected 48 bytes.")
             }
             val mByte = bytes[0].and(0xe0.toUByte())
             if (listOf(
-                    0x20.toUByte(),
-                    0x60.toUByte(),
-                    0xe0.toUByte()
-                ).contains(mByte)
+                    0x20,
+                    0x60,
+                    0xe0
+                ).map { it.toUByte() }.contains(mByte)
             ) throw Exception("Invalid first three bits.")
             val compressed = (mByte.and(0x80.toUByte())) != 0.toUByte()
             val infinity = (mByte.and(0x40.toUByte())) != 0.toUByte()

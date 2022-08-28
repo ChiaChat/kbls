@@ -21,7 +21,7 @@ object Pairing {
             .times(R12.x.pow(2).plus(ec.a))
             .div(R12.y.times(Fq(ec.q, 2.toBigInteger())))
         val v = R12.y.minus(R12.x.times(slope))
-        return P.y.minus(P.x.times(slope)).minus(v) as Field
+        return P.y.minus(P.x.times(slope)).minus(v)
     }
 
     fun addLineEval(
@@ -46,9 +46,10 @@ object Pairing {
         Q: AffinePoint,
         ec: EC = defaultEc
     ): Fq12 {
+        val T_bits = T.toUByteArray().size * 8
         var R = Q
         var f = Fq12.nil.one(ec.q)
-        for (i in 1 until T.toUByteArray().size * 8) {
+        for (i in 1 until T_bits) {
             val lrr = doubleLineEval(R, P, ec)
             f = f.times(f).times(lrr) as Fq12
             R = R.times(Fq(ec.q, 2.toBigInteger()))

@@ -21,12 +21,12 @@ class Fq2(
     override fun inverse(): FieldExt {
         val (a, b) = this.elements.map { it as Fq }
         val factor: Field = (a * a + b * b).inverse()
-        return Fq2(Q, a * factor, -b * factor)
+        return Fq2(Q, (a * factor) as Fq, (-b * factor) as Fq)
     }
 
     fun mulByNonResidue(): Fq2 {
         val (a, b) = this.elements.map { it as Fq }
-        return Fq2(Q, a - b, a + b)
+        return Fq2(Q, (a - b) as Fq, (a + b) as Fq)
     }
 
     fun modSqrt(): Fq2 {
@@ -41,13 +41,13 @@ class Fq2(
         if (Fq(this.Q, BigInteger(-1)) == gamma) {
             throw ValueException("No sqrt exists.")
         }
-        alpha = alpha.modSqrt()
+        alpha = (alpha as Fq).modSqrt()
         var delta = (a0 + alpha) * Fq(this.Q, TWO).inverse()
         gamma = delta.pow((this.Q - 1) / 2)
         if (gamma == Fq(this.Q, BigInteger(-1))) delta = (a0 - alpha) * (Fq(this.Q, TWO).inverse())
-        val x0 = delta.modSqrt()
+        val x0 = (delta as Fq).modSqrt()
         val x1 = a1 * ((Fq(this.Q, TWO) * x0).inverse())
-        return Fq2(this.Q, x0, x1)
+        return Fq2(this.Q, x0, x1 as Fq)
     }
 
     override fun nil(): Field = nil

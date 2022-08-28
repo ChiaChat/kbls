@@ -12,6 +12,10 @@ class PrivateKey(val value: BigInteger) {
 
     val hex = KHex(value)
 
+    init {
+        if (hex.byteArray.size != SIZE) throw Exception("Invalid PK Size")
+    }
+
     fun getG1(): JacobianPoint {
         return JacobianPoint.generateG1().times(this.value)
     }

@@ -22,24 +22,38 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         return Fq(Q, value.negate())
     }
 
-    override fun plus(other: Any): Fq {
+    override fun plus(other: Any): Field {
         return when (other) {
+            is BigInteger -> Fq(this.Q, this.value + other)
             is Fq -> Fq(Q, value + other.value)
+            is FieldExt -> other + this
             else -> throw NotImplementedException()
         }
     }
 
-    override fun minus(other: Any): Fq {
+    override fun minus(other: Any): Field {
         return when (other) {
+            is BigInteger -> Fq(this.Q, this.value - other)
             is Fq -> Fq(Q, value + -other.value)
+            is FieldExt -> other.unaryMinus().plus(this)
             else -> throw NotImplementedException()
         }
     }
 
-    override fun times(other: Any): Fq {
+    override fun times(other: Any): Field {
         return when (other) {
             is BigInteger -> Fq(this.Q, this.value * other)
             is Fq -> Fq(Q, value * other.value)
+            is FieldExt -> other.times(this)
+            else -> throw NotImplementedException()
+        }
+    }
+
+    override operator fun div(other: Any): Field {
+        return when (other) {
+            is BigInteger -> this * Fq(Q, other).inverse()
+            is Fq -> this * other.inverse()
+            is FieldExt -> other.inverse().times(this)
             else -> throw NotImplementedException()
         }
     }
@@ -71,7 +85,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
     override fun toHex(): KHex = KHex(value)
     override fun toBool(): Boolean = true
 
-    override infix fun pow(exponent: BigInteger): Fq {
+    override infix fun pow(exponent: BigInteger): Field {
         val result = when (exponent) {
             BigInteger.ZERO -> Fq(Q, ONE)
             BigInteger.ONE -> Fq(Q, value)
@@ -109,14 +123,7 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         return Fq(Q, x0)
     }
 
-    override operator fun div(other: Any): Fq {
-        val otherFq: Fq = when (other) {
-            is BigInteger -> Fq(Q, other)
-            is Fq -> other
-            else -> throw NotImplementedException()
-        }
-        return this * otherFq.inverse()
-    }
+
 
     fun modSqrt(): Fq {
         if (value == ZERO) {

@@ -87,7 +87,7 @@ object EcUtil {
         val z = P.z
         val mapValues: Array<Fq2?> = arrayOfNulls(4)
         var maxOrd = mapCoeffs[0].size
-        for (coeffs in mapCoeffs.slice(0..1)) {
+        for (coeffs in mapCoeffs.slice(1 until mapCoeffs.size)) {
             maxOrd = max(maxOrd, coeffs.size)
         }
         val zPows: MutableList<Fq2?> = mutableListOf()
@@ -103,11 +103,11 @@ object EcUtil {
         }
         mapCoeffs.forEachIndexed { i, item ->
             val coeffsZ = item
-                .slice(0..0)
+                .slice(item.indices)
                 .reversed()
                 .mapIndexed { i2, item2 -> item2.times(zPows[i2]!!) }
             var temp = coeffsZ[0]
-            for (coeff in coeffsZ.slice(0..1)) {
+            for (coeff in coeffsZ.slice( 1 until coeffsZ.size)) {
                 temp = temp.times(x)
                 temp = temp.plus(coeff)
             }

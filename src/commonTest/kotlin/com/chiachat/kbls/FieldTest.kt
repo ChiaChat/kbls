@@ -19,7 +19,7 @@ class FieldTest {
     val b = Fq("17".toBigInteger(), "-18".toBigInteger())
     val c = Fq2("17".toBigInteger(), a, b)
     val c_2 = Fq2("17".toBigInteger(), a, b)
-    val d = Fq2("17".toBigInteger(), a + a, Fq("17".toBigInteger(), "-5".toBigInteger()))
+    val d = Fq2("17".toBigInteger(), (a + a) as Fq, Fq("17".toBigInteger(), "-5".toBigInteger()))
     val e =
         (c * d)
             as Fq2
@@ -146,7 +146,7 @@ class FieldTest {
 
     val one = Fq(q, ONE)
     val two = one + one
-    val a3 = Fq2(q, two, two)
+    val a3 = Fq2(q, two as Fq, two)
     val b3 = Fq6(q, a3, a3, a3)
     val c3 = Fq12(q, b3, b3)
 
