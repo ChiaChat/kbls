@@ -2,6 +2,8 @@
 
 KBLS is a kotlin multiplatform BLS12-381 implementation built for creating cross platform chia applications.
 
+Tips are much appreciated and will definitely help motivation! :) `xch1u7kw3qyl5xypz5m34dangmwnstsrnze0k486j97yepn66gsycxss7pyuww`
+
 The currently supported platforms are:
 
 * jvm (android/desktop)
