@@ -1,11 +1,10 @@
-import org.gradle.model.internal.core.ModelNodes.withType
-
 plugins {
     kotlin("multiplatform") version "1.7.10"
+    id("convention.publication")
 }
 
 group = "com.chiachat"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -31,7 +30,13 @@ kotlin {
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
     val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
+        hostOs == "Mac OS X" -> {
+            macosX64("native")
+            macosArm64("native")
+            iosArm64()
+            iosX64()
+        }
+
         hostOs == "Linux" -> linuxX64("native")
         isMingwX64 -> mingwX64("native")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")

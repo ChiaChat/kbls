@@ -75,3 +75,4 @@ outTmp/
 kotlin-ide/
 .idea/
 bls-signatures/
+local.properties

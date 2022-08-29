@@ -94,6 +94,4 @@ class ChiaTests {
             proof.toHex()
         )
     }
-
-
 }
