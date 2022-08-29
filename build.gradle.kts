@@ -74,3 +74,22 @@ kotlin {
         }
     }
 }
+
+tasks {
+    val publishWindows by creating {
+        dependsOn("publishMingwX64PublicationToSonatypeRepository")
+        dependsOn("publishJvmPublicationToSonatypeRepository")
+        dependsOn("publishJsPublicationToSonatypeRepository")
+    }
+    val publishLinux by creating {
+        dependsOn("publishLinuxX64PublicationToSonatypeRepository")
+        dependsOn("publishJvmPublicationToSonatypeRepository")
+        dependsOn("publishJsPublicationToSonatypeRepository")
+    }
+    val publishMac by creating {
+        dependsOn("publishMacosArm64PublicationToSonatypeRepository")
+        dependsOn("publishMacosX64PublicationToSonatypeRepository")
+        dependsOn("publishIosX64PublicationToSonatypeRepository")
+        dependsOn("publishIosArm64PublicationToSonatypeRepository")
+    }
+}
