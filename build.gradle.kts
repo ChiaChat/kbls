@@ -3,7 +3,7 @@ plugins {
     id("convention.publication")
 }
 
-group = "com.chiachat"
+group = "org.chiachat"
 version = "1.0.0"
 
 repositories {

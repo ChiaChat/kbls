@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.util
 
 import com.chiachat.kbls.bls.constants.BLS12381.defaultEc
@@ -31,13 +33,13 @@ object Pairing {
     ): Field {
         val R12 = R.untwist()
         val Q12 = Q.untwist()
-        if (R12.equals(Q12.unaryMinus())) return P.x.minus(R12.x) as Field
+        if (R12.equals(Q12.unaryMinus())) return P.x.minus(R12.x)
         val slope = Q12.y.minus(R12.y).div(Q12.x.minus(R12.x))
         val v = Q12.y
             .times(R12.x)
             .minus(R12.y.times(Q12.x))
             .div(R12.x.minus(Q12.x))
-        return P.y.minus(P.x.times(slope)).minus(v) as Field
+        return P.y.minus(P.x.times(slope)).minus(v)
     }
 
     fun millerLoop(

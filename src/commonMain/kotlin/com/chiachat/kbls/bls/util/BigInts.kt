@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.util
 
 import com.chiachat.kbls.bls.fields.NotImplementedException
@@ -19,9 +21,8 @@ fun Int.toBytes(size: Int, type: String = "big"): UByteArray {
     return when (type) {
         "big" -> {
             val bytes = this.toBigInteger().toUByteArray()
-            UByteArray(4 - bytes.size).also { it.fill(0.toUByte()) } + bytes
+            UByteArray(size - bytes.size).also { it.fill(0.toUByte()) } + bytes
         }
-
         else -> throw NotImplementedException()
     }
 }

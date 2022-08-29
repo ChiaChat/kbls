@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.util
 
 import com.chiachat.kbls.bls.constants.BLS12381.defaultEcTwist

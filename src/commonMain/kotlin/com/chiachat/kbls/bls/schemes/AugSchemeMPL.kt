@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.schemes
 
 import com.chiachat.kbls.bls.constants.Schemes.augSchemeDst
@@ -49,11 +51,11 @@ object AugSchemeMPL {
         messages: List<UByteArray>,
         signature: JacobianPoint
     ): Boolean {
-        if (publicKeys.size !== messages.size || publicKeys.isEmpty()) {
+        if (publicKeys.size != messages.size || publicKeys.isEmpty()) {
             return false
         }
         val mPrimes: MutableList<UByteArray> = mutableListOf()
-        for (i in 0 until publicKeys.size) {
+        for (i in publicKeys.indices) {
             mPrimes.add(
                 publicKeys[i].toBytes() + messages[i]
             )

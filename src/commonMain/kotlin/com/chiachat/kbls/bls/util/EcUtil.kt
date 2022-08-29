@@ -33,7 +33,7 @@ object EcUtil {
         point: JacobianPoint,
         ec: EC = defaultEc
     ): JacobianPoint {
-        var value = value
+        var valueVar = value
         var result = JacobianPoint(
             point.x.one(ec.q),
             point.x.one(ec.q),
@@ -41,14 +41,14 @@ object EcUtil {
             true,
             ec
         )
-        if (point.isInfinity || value mod ec.q == ZERO) return result
+        if (point.isInfinity || valueVar mod ec.q == ZERO) return result
         var addend = point
-        while (value > ZERO) {
-            if (value.and(ONE) != ZERO) {
+        while (valueVar > ZERO) {
+            if (valueVar.and(ONE) != ZERO) {
                 result = result.plus(addend)
             }
             addend = addend.plus(addend)
-            value = value.shr(1)
+            valueVar = valueVar.shr(1)
         }
         return result
     }

@@ -131,6 +131,7 @@ class AffinePoint(
     }
 
     companion object {
+        @Suppress
         fun fromFieldExt(x: Field, y: Field, isInfinity: Boolean, ec: EC = defaultEc): AffinePoint {
             return when (x) {
                 is Fq -> AffinePoint(x, y, isInfinity, ec)

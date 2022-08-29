@@ -4,6 +4,7 @@ import com.chiachat.kbls.bls.util.HashInfo
 import com.soywiz.krypto.sha256
 import com.soywiz.krypto.sha512
 
+@OptIn(ExperimentalUnsignedTypes::class)
 object HashInfoConstants {
     val sha256 = HashInfo(
         byteSize = 32,

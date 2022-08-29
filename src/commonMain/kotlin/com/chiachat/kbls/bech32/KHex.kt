@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bech32
 
 import com.ionspin.kotlin.bignum.integer.BigInteger

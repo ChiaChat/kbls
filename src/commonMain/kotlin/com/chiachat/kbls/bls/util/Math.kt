@@ -4,15 +4,15 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 
 object Math {
     fun modPow(base: BigInteger, exponent: BigInteger, modulo: BigInteger): BigInteger {
-        var base = base
-        var exponent = exponent
-        if (exponent < 1) return ONE
-        else if (base < 0 || base > modulo) base = base.mod(modulo)
+        var baseVar = base
+        var exponentVar = exponent
+        if (exponentVar < 1) return ONE
+        else if (baseVar < 0 || baseVar > modulo) baseVar = baseVar.mod(modulo)
         var result = ONE
-        while (exponent > 0) {
-            if ((exponent.and(ONE) > 0)) result = result.times(base).mod(modulo)
-            exponent = exponent.shr(1)
-            base = base.times(base).mod(modulo)
+        while (exponentVar > 0) {
+            if ((exponentVar.and(ONE) > 0)) result = result.times(baseVar).mod(modulo)
+            exponentVar = exponentVar.shr(1)
+            baseVar = baseVar.times(baseVar).mod(modulo)
         }
         return result
     }

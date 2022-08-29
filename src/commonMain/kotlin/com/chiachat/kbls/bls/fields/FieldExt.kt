@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.fields
 
 import com.chiachat.kbls.bech32.KHex
@@ -54,6 +56,7 @@ sealed class FieldExt(
             elements.add(if (i == 0) y else z)
         }
         val result = this.construct(Q, elements)
+        @Suppress
         when (this) {
             is Fq2 -> result.root = Fq(Q, N1)
             is Fq6 -> result.root = Fq2(Q, Fq.nil.one(Q), Fq.nil.one(Q))
@@ -63,8 +66,6 @@ sealed class FieldExt(
                 Fq2.nil.one(Q) as Fq2,
                 Fq2.nil.zero(Q) as Fq2
             )
-
-            else -> throw InvalidOperandException()
         }
         return result
     }
@@ -99,15 +100,15 @@ sealed class FieldExt(
 
     override fun qiPower(i: Int): FieldExt {
         if (this.Q != BLS12381.q) throw Exception("Invalid Q in qiPower")
-        val i = i % this.extension
-        if (i == 0) return this
+        val power = i % this.extension
+        if (power == 0) return this
         return this.constructWithRoot(
             this.Q,
             this.elements.mapIndexed { index, element ->
-                if (index == 0) element.qiPower(i) else element.qiPower(i) * getFrob(
+                if (index == 0) element.qiPower(index) else element.qiPower(index) * getFrob(
                     FrobIndex(
                         this.extension,
-                        i,
+                        index,
                         index
                     )
                 )
@@ -173,7 +174,7 @@ sealed class FieldExt(
     }
 
     override operator fun minus(other: Any): Field {
-        val negated = when (other) {
+        val negated: Any = when (other) {
             is BigInteger -> -other
             is Field -> -other
             else -> throw InvalidOperandException()
@@ -182,7 +183,7 @@ sealed class FieldExt(
     }
 
     override operator fun div(other: Any): Field {
-        val inverted = when (other) {
+        val inverted: Any = when (other) {
             is BigInteger -> ONE / other
             is Field -> other.inverse()
             else -> throw InvalidOperandException()

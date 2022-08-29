@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.fields
 
 import com.chiachat.kbls.bech32.KHex
@@ -204,11 +206,11 @@ class Fq(override val Q: BigInteger, otherValue: BigInteger) : Field() {
         return other is Fq && this.value == other.value && this.Q == other.Q
     }
 
-    override fun fromBytes(q: BigInteger, bytes: UByteArray): Fq {
+    override fun fromBytes(Q: BigInteger, bytes: UByteArray): Fq {
         if (bytes.size != 48) {
             throw InvalidByteArraySizeException()
         } else {
-            return Fq(q, BigInteger.fromUByteArray(bytes, Sign.POSITIVE))
+            return Fq(Q, BigInteger.fromUByteArray(bytes, Sign.POSITIVE))
         }
     }
 

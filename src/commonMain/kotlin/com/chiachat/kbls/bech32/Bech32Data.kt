@@ -1,4 +1,6 @@
-package com.chiachat.kbls.crypto.bech32
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
+package com.chiachat.kbls.bech32
 
 data class Bech32Data(
     val humanReadablePart: String,

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.schemes
 
 import com.chiachat.kbls.bls.constants.BLS12381.defaultEc

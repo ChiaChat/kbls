@@ -8,6 +8,7 @@ import com.chiachat.kbls.bls.keys.PrivateKey
 import com.chiachat.kbls.bls.util.Hkdf.extractExpand
 import com.soywiz.krypto.sha256
 
+@OptIn(ExperimentalUnsignedTypes::class)
 object HDKeys {
     fun keyGen(seed: UByteArray): PrivateKey {
         val length = 48

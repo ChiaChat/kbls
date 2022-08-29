@@ -57,10 +57,9 @@ publishing {
 
         // Provide artifacts information requited by Maven Central
         pom {
-            name.set("KBLS")
+            name.set("kbls")
             description.set("Kotlin Multiplatform BLS12-381 library (jvm + ios + js)")
             url.set("https://github.com/ChiaChat/kbls")
-
             licenses {
                 license {
                     name.set("GNU General Public License Version 3")

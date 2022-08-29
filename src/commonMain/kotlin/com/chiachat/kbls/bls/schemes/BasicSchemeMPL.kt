@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package com.chiachat.kbls.bls.schemes
 
 import com.chiachat.kbls.bls.constants.Schemes.basicSchemeDst
@@ -37,7 +39,7 @@ object BasicSchemeMPL {
         messages: List<UByteArray>,
         signature: JacobianPoint
     ): Boolean {
-        if (publicKeys.size !== messages.size || publicKeys.isEmpty()) {
+        if (publicKeys.size != messages.size || publicKeys.isEmpty()) {
             return false
         }
         for (message in messages) {

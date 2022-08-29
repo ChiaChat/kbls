@@ -1,4 +1,4 @@
-import com.chiachat.kbls.crypto.bech32.Bech32Data
+import com.chiachat.kbls.bech32.Bech32Data
 import org.chiachat.kbls.crypto.bech32.AddressFormatException
 
 /**
@@ -6,6 +6,7 @@ import org.chiachat.kbls.crypto.bech32.AddressFormatException
  *
  * Taken from [Bitcoinj Bech32 Java implementation](https://github.com/bitcoinj/bitcoinj/blob/master/core/src/main/java/org/bitcoinj/core/Bech32.java)
  */
+@OptIn(ExperimentalUnsignedTypes::class)
 object Bech32 {
     /** The Bech32 character set for encoding.  */
     private const val CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
@@ -42,7 +43,7 @@ object Bech32 {
         val hrpLength = hrp.length
         val ret = ByteArray(hrpLength * 2 + 1)
         for (i in 0 until hrpLength) {
-            val c = hrp[i].toInt() and 0x7f // Limit to standard 7-bit ASCII
+            val c = hrp[i].code and 0x7f // Limit to standard 7-bit ASCII
             ret[i] = (c.ushr(5) and 0x07).toByte()
             ret[i + hrpLength + 1] = (c and 0x1f).toByte()
         }
@@ -93,8 +94,8 @@ object Bech32 {
      * Encodes a Bech32 string.
      */
     fun encode(humanReadablePart: String, dataIn: UByteArray): String {
-        var hrp = humanReadablePart
-        var data = convertBits(dataIn, dataIn.size, 8, 5, true)
+        val hrp = humanReadablePart
+        val data = convertBits(dataIn, dataIn.size, 8, 5, true)
 
         check(hrp.isNotEmpty()) { "Human-readable part is too short" }
         check(hrp.length <= 83) { "Human-readable part is too long" }
@@ -232,7 +233,7 @@ object Bech32 {
         }
         for (i in 0 until str.length) {
             val c = str[i]
-            if (c.toInt() < 33 || c.toInt() > 126) throw AddressFormatException.InvalidCharacter(
+            if (c.code < 33 || c.code > 126) throw AddressFormatException.InvalidCharacter(
                 c,
                 i
             )
@@ -256,13 +257,13 @@ object Bech32 {
         val values = ByteArray(dataPartLength)
         for (i in 0 until dataPartLength) {
             val c = str[i + pos + 1]
-            if (CHARSET_REV[c.toInt()].toInt() == -1) throw AddressFormatException.InvalidCharacter(
+            if (CHARSET_REV[c.code].toInt() == -1) throw AddressFormatException.InvalidCharacter(
                 c,
                 i + pos + 1
             )
-            values[i] = CHARSET_REV[c.toInt()]
+            values[i] = CHARSET_REV[c.code]
         }
-        val hrp = str.substring(0, pos).toLowerCase()
+        val hrp = str.substring(0, pos).lowercase()
         if (!verifyChecksum(
                 hrp,
                 values
