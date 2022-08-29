@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "org.chiachat"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -34,6 +34,9 @@ kotlin {
             }
         }
     }
+    iosSimulatorArm64()
+
+
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
     when {
