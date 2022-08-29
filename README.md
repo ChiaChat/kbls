@@ -39,7 +39,7 @@ To get started using this library, just add the following dependency to your com
 sourceSets {
         val commonMain by getting {
             dependencies() {
-                implementation("org.chiachat:kbls:1.0.2")
+                implementation("org.chiachat:kbls:1.0.3")
             }
         }
     }
