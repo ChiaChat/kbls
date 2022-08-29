@@ -27,18 +27,24 @@ kotlin {
             }
         }
     }
+    ios {
+        binaries {
+            framework {
+                baseName = "kbls"
+            }
+        }
+    }
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
+    when {
         hostOs == "Mac OS X" -> {
-            macosX64("native")
-            macosArm64("native")
+            macosX64()
+            macosArm64()
             iosArm64()
             iosX64()
         }
-
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
+        hostOs == "Linux" -> linuxX64()
+        isMingwX64 -> mingwX64()
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
@@ -58,8 +64,7 @@ kotlin {
         val jvmTest by getting
         val jsMain by getting
         val jsTest by getting
-        val nativeMain by getting
-        val nativeTest by getting
+        val iosMain by getting
     }
 
     tasks {

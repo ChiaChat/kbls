@@ -74,7 +74,7 @@ publishing {
                 }
             }
             scm {
-                url.set("https://github.com/ChiaChat/kbls.git")
+                url.set("https://github.com/ChiaChat/kbls")
             }
         }
     }
